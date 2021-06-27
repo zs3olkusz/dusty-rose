@@ -29,15 +29,15 @@
     }
   },
   "rules": {
-    "prettier/prettier": [
-      "error", {
-        "arrowParens": "always",
-        "singleQuote": true,
-        "bracketSpacing": true,
-        "useTabs": false,
-        "endOfLine": "auto"
-      }
-    ],
+    // "prettier/prettier": [
+    //   "error", {
+    //     "arrowParens": "always",
+    //     "singleQuote": true,
+    //     "bracketSpacing": true,
+    //     "useTabs": false,
+    //     "endOfLine": "auto"
+    //   }
+    // ],
     "quotes": [
       "error",
       "single"
