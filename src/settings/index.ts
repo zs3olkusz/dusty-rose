@@ -53,7 +53,10 @@ export class Settings implements ISettings {
   }
 }
 
-function parseDataFile(filePath: string, defaults: ISettingsData): ISettingsData {
+function parseDataFile(
+  filePath: string,
+  defaults: ISettingsData
+): ISettingsData {
   try {
     return JSON.parse(readFileSync(filePath) as any);
   } catch (error) {
