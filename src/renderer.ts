@@ -26,6 +26,13 @@
  * ```
  */
 
-import './index.css';
+import { renderer } from './ds/UI';
 
-console.log('👋 This message is being logged by "renderer.js", included via webpack');
+// Styles
+import './ds/Styles/index.scss';
+import './ds/Styles/aside/index.scss';
+import './ds/Styles/footer/index.scss';
+import './ds/Styles/window/main.scss';
+import './ds/Styles/window/nav.scss';
+
+renderer();
