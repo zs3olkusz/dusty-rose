@@ -1,7 +1,7 @@
 {
   "name": "dusty-rose",
   "productName": "Dusty Rose",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Code Editor",
   "main": ".webpack/main",
   "scripts": {
