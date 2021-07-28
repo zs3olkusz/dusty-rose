@@ -45,8 +45,6 @@ export class Highlighter {
   public highlight(): void {
     const codeLines: string[] = this._getEditorContent();
 
-    console.log(codeLines);
-
     let html = '';
 
     codeLines.forEach((line: string) => {
