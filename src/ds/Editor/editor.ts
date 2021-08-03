@@ -67,5 +67,7 @@ export class Editor {
         return false;
       }
     });
+
+    this.el.focus();
   }
 }

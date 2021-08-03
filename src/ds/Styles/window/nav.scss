@@ -21,14 +21,6 @@ nav {
       font-size: var(--navFontSize);
       margin: 0 calc(var(--navFontSize) / 4);
 
-      .active {
-        border-bottom: 2px solid var(--background3);
-
-        .file__close {
-          opacity: 1;
-        }
-      }
-
       &:hover .file__close {
         opacity: 1;
         transition: var(--transitionTime);
@@ -43,6 +35,14 @@ nav {
           color: var(--foreground2);
           transition: var(--transitionTime);
         }
+      }
+    }
+
+    .active {
+      border-bottom: 2px solid var(--background3);
+
+      .file__close {
+        opacity: 1;
       }
     }
   }

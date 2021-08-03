@@ -30,5 +30,6 @@ import { renderer } from './ds/UI';
 
 // Styles
 import './ds/Styles/style.scss';
+import './ds/Editor/highlight/languages/styles/index.scss';
 
 renderer();

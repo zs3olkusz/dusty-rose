@@ -6,7 +6,8 @@
 
 // marker text colors
 .m1 {
-  color: #000000;
+  // color: #000000;
+  color: var(--foreground2);
 }
 
 .m2 {
