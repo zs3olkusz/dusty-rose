@@ -29,10 +29,7 @@
 import { renderer } from './ds/UI';
 
 // Styles
-import './ds/Styles/index.scss';
-import './ds/Styles/aside/index.scss';
-import './ds/Styles/footer/index.scss';
-import './ds/Styles/window/main.scss';
-import './ds/Styles/window/nav.scss';
+import './ds/Styles/style.scss';
+import './ds/Editor/highlight/languages/styles/index.scss';
 
 renderer();

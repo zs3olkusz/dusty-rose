@@ -1,0 +1,119 @@
+// default styles for highlighter
+
+/*
+  Those colors could be overwrited with theme styles
+*/
+
+// marker text colors
+.m1 {
+  // color: #000000;
+  color: var(--foreground2);
+}
+
+.m2 {
+  color: #fffffe;
+}
+
+.m3 {
+  color: #808080;
+}
+
+.m4 {
+  color: #ff0000;
+}
+
+.m5 {
+  color: #0451a5;
+}
+
+.m6 {
+  color: #0000ff;
+}
+
+.m7 {
+  color: #098658;
+}
+
+.m8 {
+  color: #008000;
+}
+
+.m9 {
+  color: #dd0000;
+}
+
+.m10 {
+  color: #383838;
+}
+
+.m11 {
+  color: #cd3131;
+}
+
+.m12 {
+  color: #863b00;
+}
+
+.m13 {
+  color: #af00db;
+}
+
+.m14 {
+  color: #800000;
+}
+
+.m15 {
+  color: #e00000;
+}
+
+.m16 {
+  color: #3030c0;
+}
+
+.m17 {
+  color: #666666;
+}
+
+.m18 {
+  color: #778899;
+}
+
+.m19 {
+  color: #c700c7;
+}
+
+.m20 {
+  color: #a31515;
+}
+
+.m21 {
+  color: #4f76ac;
+}
+
+.m22 {
+  color: #008080;
+}
+
+.m23 {
+  color: #001188;
+}
+
+.m24 {
+  color: #4864aa;
+}
+
+// marker text italic
+.mi {
+  font-style: italic;
+}
+
+// marker text bold
+.mb {
+  font-weight: bold;
+}
+
+// marker text with underline
+.mu {
+  text-decoration: underline;
+  text-underline-position: under;
+}

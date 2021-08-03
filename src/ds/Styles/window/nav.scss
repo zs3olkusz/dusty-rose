@@ -1,37 +1,48 @@
 nav {
   grid-area: header;
-  background-color: rgba(255, 255, 255, 0.8);
+  background-color: var(--background1);
+  color: var(--foreground2);
+  height: calc(var(--navHeight) - var(--scrollBarSize));
+  user-select: none;
+  overflow-y: hidden;
 
-  height: 50px;
-
-  ul {
+  .opened-tabs {
     list-style: none;
+    overflow-x: scroll;
+    white-space: nowrap;
+    overflow-x: scroll;
 
-    li {
+    height: 100%;
+    width: 100%;
+
+    .tab {
       display: inline-block;
       cursor: pointer;
+      font-size: var(--navFontSize);
+      margin: 0 calc(var(--navFontSize) / 4);
 
-      line-height: 50px;
-      font-size: 18px;
+      &:hover .file__close {
+        opacity: 1;
+        transition: var(--transitionTime);
+      }
 
-      .file {
-        font-weight: 800;
-        font-size: 20px;
+      .file__close {
+        border-radius: 5px;
+        opacity: 0;
 
-        &__close {
-          width: 20px;
-          height: 20px;
-          text-align: center;
-          border: none;
-          background-color: rgba(255, 255, 255, 0.5);
-
-          &:hover {
-            background-color: rgba(255, 255, 255, 0.9);
-            border-radius: 2px;
-            border: none;
-            cursor: pointer;
-          }
+        &:hover {
+          background-color: var(--background3);
+          color: var(--foreground2);
+          transition: var(--transitionTime);
         }
+      }
+    }
+
+    .active {
+      border-bottom: 2px solid var(--background3);
+
+      .file__close {
+        opacity: 1;
       }
     }
   }
