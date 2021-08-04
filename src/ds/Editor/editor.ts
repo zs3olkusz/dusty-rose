@@ -1,4 +1,6 @@
+import { Tab } from '../UI/nav';
 import { Caret } from './core/caret';
+import { textToHtml } from './core/text';
 import { Highlighter } from './highlight/highlighter';
 import type { ILanguage } from './highlight/languages/language';
 
@@ -58,7 +60,7 @@ export class Editor {
         this.el.innerHTML = '<div><br></div>';
       }
 
-      if (ignoredKeys.indexOf(e.key) === -1) {
+      if (ignoredKeys.indexOf(e.key) === -1 && this.mode) {
         const pos = this.caret.getCaretPos();
 
         this.highlight.highlight();
@@ -68,6 +70,33 @@ export class Editor {
       }
     });
 
+    this.el.addEventListener('drop', (event: DragEvent) => {
+      event.preventDefault();
+      event.stopPropagation();
+
+      for (let index = 0; index < event.dataTransfer.files.length; index++) {
+        const element = event.dataTransfer.files[index];
+        console.log('File Path of dragged files: ', element.path);
+
+        this.setContent(window.ds.read(element.path));
+
+        new Tab(this, element.path);
+      }
+    });
+
+    this.el.addEventListener('paste', (e: ClipboardEvent) => {
+      e.preventDefault();
+
+      const data = e.clipboardData.getData('text/plain');
+
+      this.setContent(data);
+    });
+
     this.el.focus();
+  }
+
+  public setContent(content: string) {
+    this.el.innerHTML = textToHtml(content);
+    this.mode && this.highlight.highlight();
   }
 }
