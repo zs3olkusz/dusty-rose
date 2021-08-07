@@ -113,12 +113,16 @@ export class Editor {
   }
 
   public saveFile(): void {
-    window.ds.write(
+    const res = window.ds.write(
       this.openedTab.path,
       htmlToText(this.el).join(
         getLineEndings() === LineEnding.CRLF ? '\r\n' : '\n'
       )
     );
+
+    if (res.status === 'Success!' && !this.openedTab.path) {
+      this.openedTab.setPath(res.path);
+    }
   }
 
   public setMode(mode: ILanguage): void {

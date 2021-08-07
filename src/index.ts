@@ -8,7 +8,7 @@ declare global {
   interface Window {
     ds: {
       platform(): string;
-      write(path: PathLike, data: string): string;
+      write(path: PathLike, data: string): { status: string; path: string };
       read(path: PathLike): string;
       delete(path: PathLike): void;
       mkdir(path: PathLike): void;
@@ -36,26 +36,22 @@ ipcMain.on('ds:read', (event, path: string) => {
 });
 
 ipcMain.on('ds:write', (event, path: string, data: string) => {
-  let res = 'Success!';
+  let status = 'Success!';
+  let filePath = '';
 
   if (path.length === 0) {
-    dialog.showSaveDialog(mainWindow).then((returnValues) => {
-      if (returnValues.canceled) {
-        event.returnValue = 'Failed!';
-        return;
-      }
+    filePath = dialog.showSaveDialogSync(mainWindow);
 
-      fs.writeFile(returnValues.filePath, data, { encoding: 'utf8' }, (err) => {
-        err && (res = err.message);
-      });
+    fs.writeFile(filePath, data, { encoding: 'utf8' }, (err) => {
+      err && (status = err.message);
     });
   } else {
     fs.writeFile(path, data, { encoding: 'utf8' }, (err) => {
-      err && (res = err.message);
+      err && (status = err.message);
     });
   }
 
-  event.returnValue = res;
+  event.returnValue = { status, path: path ? path : filePath };
 });
 
 ipcMain.on('ds:platform', (event) => {

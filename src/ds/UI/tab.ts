@@ -15,18 +15,32 @@ export class Tab {
   constructor(editor: Editor, path: string) {
     this.editor = editor;
 
-    this.path = path;
-
-    this.fileName = this.path
-      ? getBaseName(convertWindowsPathToUnixPath(this.path))
-      : 'Untitled';
-    this.fileContent = this.path ? window.ds.read(path) : '';
+    this.setPath(path);
 
     this.tab = this._createTab();
 
     document.getElementById('tabs').appendChild(this.tab);
 
     this.openTab();
+  }
+
+  public setPath(path: string): void {
+    this.path = path;
+
+    this.fileName = this.path
+      ? getBaseName(convertWindowsPathToUnixPath(this.path))
+      : 'Untitled';
+    this.fileContent = this.path ? window.ds.read(this.path) : '';
+
+    if (this.tab) {
+      const tabContainer = document.getElementById('tabs');
+
+      tabContainer.removeChild(this.tab);
+
+      this.tab = this._createTab();
+
+      tabContainer.appendChild(this.tab);
+    }
   }
 
   public openTab(): void {
