@@ -1,13 +1,14 @@
-import { app, BrowserWindow, ipcMain, Menu } from 'electron';
+import { app, BrowserWindow, dialog, ipcMain, Menu } from 'electron';
 import { Settings } from './settings';
 import { DSMenu } from './ds/Menu';
 import fs, { PathLike } from 'fs';
+import path from 'path';
 
 declare global {
   interface Window {
     ds: {
       platform(): string;
-      write(path: PathLike, data: string): void;
+      write(path: PathLike, data: string): string;
       read(path: PathLike): string;
       delete(path: PathLike): void;
       mkdir(path: PathLike): void;
@@ -22,11 +23,42 @@ declare global {
 declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
 declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 
-ipcMain.on('read', (event, path: string) => {
-  event.returnValue = fs.existsSync(path) ? fs.readFileSync(path, 'utf8') : '';
+let mainWindow: BrowserWindow = null;
+
+ipcMain.on('ds:read', (event, path: string) => {
+  event.returnValue = fs.existsSync(path)
+    ? fs.statSync(path).isFile()
+      ? fs.readFileSync(path, 'utf8').length < 25_000
+        ? fs.readFileSync(path, 'utf8')
+        : 'File too big!'
+      : 'Not a file!'
+    : 'File does not exists!';
 });
 
-ipcMain.on('platform', (event) => {
+ipcMain.on('ds:write', (event, path: string, data: string) => {
+  let res = 'Success!';
+
+  if (path.length === 0) {
+    dialog.showSaveDialog(mainWindow).then((returnValues) => {
+      if (returnValues.canceled) {
+        event.returnValue = 'Failed!';
+        return;
+      }
+
+      fs.writeFile(returnValues.filePath, data, { encoding: 'utf8' }, (err) => {
+        err && (res = err.message);
+      });
+    });
+  } else {
+    fs.writeFile(path, data, { encoding: 'utf8' }, (err) => {
+      err && (res = err.message);
+    });
+  }
+
+  event.returnValue = res;
+});
+
+ipcMain.on('ds:platform', (event) => {
   event.returnValue = process.platform;
 });
 
@@ -45,7 +77,7 @@ const createWindow = (): void => {
   });
 
   // Create the browser window.
-  const mainWindow = new BrowserWindow({
+  mainWindow = new BrowserWindow({
     // ...settings.get('windowBounds'),
     // minHeight: 600,
     // minWidth: 800,

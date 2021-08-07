@@ -1,6 +1,7 @@
-import { Tab } from '../UI/nav';
+import { Tab } from '../UI/tab';
+import { getLineEndings, LineEnding } from '../utils/files';
 import { Caret } from './core/caret';
-import { textToHtml } from './core/text';
+import { textToHtml, htmlToText } from './core/text';
 import { Highlighter } from './highlight/highlighter';
 import type { ILanguage } from './highlight/languages/language';
 
@@ -40,19 +41,18 @@ const ignoredKeys = [
 ];
 
 export class Editor {
-  el: HTMLElement;
   highlight: Highlighter;
-  mode: ILanguage;
   caret: Caret;
+  openedTab: Tab;
+  tabs: Tab[];
 
-  constructor(el: HTMLElement, mode: ILanguage = null) {
-    this.el = el;
-
+  constructor(public el: HTMLElement, private _mode: ILanguage = null) {
     this.caret = new Caret(this.el);
 
-    this.mode = mode;
+    this.highlight = new Highlighter(this.el, this._mode);
 
-    this.highlight = new Highlighter(this.el, this.mode);
+    this.openedTab = null;
+    this.tabs = [];
 
     this.el.addEventListener('keyup', (e: KeyboardEvent) => {
       // prevent deleting last line in editor
@@ -60,13 +60,19 @@ export class Editor {
         this.el.innerHTML = '<div><br></div>';
       }
 
-      if (ignoredKeys.indexOf(e.key) === -1 && this.mode) {
+      if (e.ctrlKey && e.key.toLowerCase() === 's' && this.openedTab) {
+        this.saveFile();
+        return;
+      } else if (e.ctrlKey && e.key.toLowerCase() === 'n') {
+        this.newTab();
+        return;
+      }
+
+      if (ignoredKeys.indexOf(e.key) === -1 && this._mode) {
         const pos = this.caret.getCaretPos();
 
         this.highlight.highlight();
         this.caret.setCaretPos(pos);
-
-        return false;
       }
     });
 
@@ -76,13 +82,21 @@ export class Editor {
 
       for (let index = 0; index < event.dataTransfer.files.length; index++) {
         const element = event.dataTransfer.files[index];
-        console.log('File Path of dragged files: ', element.path);
 
         this.setContent(window.ds.read(element.path));
-
-        new Tab(this, element.path);
+        this.newTab(element.path);
       }
+
+      this.el.classList.remove('drag-over');
     });
+
+    this.el.addEventListener('dragenter', () =>
+      this.el.classList.add('drag-over')
+    );
+
+    this.el.addEventListener('dragleave', () =>
+      this.el.classList.remove('drag-over')
+    );
 
     this.el.addEventListener('paste', (e: ClipboardEvent) => {
       e.preventDefault();
@@ -92,11 +106,35 @@ export class Editor {
       this.setContent(data);
     });
 
+    // on editor creation create tab
+    this.newTab();
+
     this.el.focus();
   }
 
-  public setContent(content: string) {
+  public saveFile(): void {
+    window.ds.write(
+      this.openedTab.path,
+      htmlToText(this.el).join(
+        getLineEndings() === LineEnding.CRLF ? '\r\n' : '\n'
+      )
+    );
+  }
+
+  public setMode(mode: ILanguage): void {
+    this._mode = mode;
+
+    this.highlight = new Highlighter(this.el, this._mode);
+    this.highlight.highlight();
+  }
+
+  public setContent(content: string): void {
     this.el.innerHTML = textToHtml(content);
-    this.mode && this.highlight.highlight();
+    this._mode && this.highlight.highlight();
+  }
+
+  public newTab(path: string = ''): void {
+    this.openedTab = new Tab(this, path);
+    this.tabs.push(this.openedTab);
   }
 }
