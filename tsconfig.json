@@ -13,6 +13,8 @@
     "paths": {
       "*": ["node_modules/*"]
     }
+    },
+    "target": "es2021"
   },
   "include": ["src/**/*"]
 }

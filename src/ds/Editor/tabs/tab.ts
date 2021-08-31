@@ -1,7 +1,14 @@
-import { Editor } from '../Editor/editor';
-import { convertWindowsPathToUnixPath, getBaseName } from '../utils/files';
+import { Caret } from '../core/caret';
+import { Editor } from '../editor';
+import { convertWindowsPathToUnixPath, getBaseName } from '../../utils/files';
+import { escapeCharacters } from '../core/text';
+import { Highlighter } from '../highlight';
+import lang from '../highlight/languages/javascript.json';
 
 let dragSrcEl: HTMLElement = null;
+
+const spacesEl = document.getElementById('spaces');
+const modeEl = document.getElementById('mode');
 
 export class Tab {
   path: string;
@@ -9,11 +16,24 @@ export class Tab {
   fileContent: string;
 
   editor: Editor;
+  highlight: Highlighter;
+  caret: Caret;
 
   tab: HTMLElement;
 
-  constructor(editor: Editor, path: string) {
+  constructor(editor: Editor, path: string, mode: any = null) {
+    mode = lang;
     this.editor = editor;
+
+    this.caret = new Caret(this.editor.el);
+
+    if (mode) {
+      this.highlight = new Highlighter(this.editor.el, mode);
+      modeEl.textContent = 'In some kind mode';
+    } else {
+      this.highlight = null;
+      modeEl.textContent = 'Text';
+    }
 
     this.setPath(path);
 
@@ -22,6 +42,10 @@ export class Tab {
     document.getElementById('tabs').appendChild(this.tab);
 
     this.openTab();
+
+    spacesEl.addEventListener('change', (e: any) => {
+      this.caret.setTabWidth(e.target.value);
+    });
   }
 
   public setPath(path: string): void {
@@ -30,7 +54,9 @@ export class Tab {
     this.fileName = this.path
       ? getBaseName(convertWindowsPathToUnixPath(this.path))
       : 'Untitled';
-    this.fileContent = this.path ? window.ds.read(this.path) : '';
+    this.fileContent = this.path
+      ? escapeCharacters(window.ds.read(this.path))
+      : '';
 
     if (this.tab) {
       const tabContainer = document.getElementById('tabs');
@@ -48,6 +74,7 @@ export class Tab {
     this._toggleOffOtherTabs();
     this.tab.classList.add('active');
     this.editor.el.focus();
+    this.editor.tabsManager.openedTab = this;
   }
 
   private _createTab(): HTMLElement {
@@ -91,7 +118,7 @@ export class Tab {
     // @ts-ignore
     e.target.parentNode.parentElement.removeChild(e.target.parentNode);
 
-    this.editor.tabs.filter((tab) => tab !== this);
+    this.editor.tabsManager.tabs[this.path] = null;
   }
 
   private _toggleOffOtherTabs(): void {

@@ -25,6 +25,12 @@ rules.push({
   ],
 });
 
+rules.push(
+  {
+    test: /src.*\.html$/,
+    use: 'html-loader'
+  })
+
 module.exports = {
   module: {
     rules,

@@ -1,0 +1,32 @@
+.highlight.keyword,
+.highlight.key {
+  color: var(--syntaxColor1);
+}
+
+.highlight.wrapping {
+  color: var(--syntaxColor2);
+}
+
+.highlight.annotation,
+.highlight.variable,
+.highlight.import {
+  color: var(--syntaxColor3);
+}
+
+.highlight.number,
+.highlight.capital,
+.highlight.class,
+.highlight.value,
+.highlight.special,
+.highlight.atom,
+.highlight.literal-value {
+  color: var(--syntaxColor4);
+}
+
+.highlight.function {
+  color: var(--syntaxColor5);
+}
+
+.highlight.comment {
+  color: var(--syntaxColor6);
+}

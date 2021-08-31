@@ -15,6 +15,15 @@ export function getBaseName(fullPath: string): string {
   return fullPath.slice(lastSlash + 1);
 }
 
+export function getFileExtension(fullPath: string): string {
+  const baseName = getBaseName(fullPath);
+  const idx = baseName.lastIndexOf('.');
+
+  if (idx === -1) return '';
+
+  return baseName.substr(idx + 1);
+}
+
 export function checkLineEndings(text: string): null | LineEnding {
   const testText = text.substr(0, 1000);
   const hasCRLF = /\r\n/.test(testText);

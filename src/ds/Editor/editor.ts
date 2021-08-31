@@ -1,9 +1,6 @@
-import { Tab } from '../UI/tab';
+import { TabsManager } from './tabs/manager';
 import { getLineEndings, LineEnding } from '../utils/files';
-import { Caret } from './core/caret';
 import { textToHtml, htmlToText } from './core/text';
-import { Highlighter } from './highlight/highlighter';
-import type { ILanguage } from './highlight/languages/language';
 
 const ignoredKeys = [
   'Alt',
@@ -41,18 +38,10 @@ const ignoredKeys = [
 ];
 
 export class Editor {
-  highlight: Highlighter;
-  caret: Caret;
-  openedTab: Tab;
-  tabs: Tab[];
+  tabsManager: TabsManager;
 
-  constructor(public el: HTMLElement, private _mode: ILanguage = null) {
-    this.caret = new Caret(this.el);
-
-    this.highlight = new Highlighter(this.el, this._mode);
-
-    this.openedTab = null;
-    this.tabs = [];
+  constructor(public readonly el: HTMLElement) {
+    this.tabsManager = new TabsManager(this);
 
     this.el.addEventListener('keyup', (e: KeyboardEvent) => {
       // prevent deleting last line in editor
@@ -60,19 +49,32 @@ export class Editor {
         this.el.innerHTML = '<div><br></div>';
       }
 
-      if (e.ctrlKey && e.key.toLowerCase() === 's' && this.openedTab) {
+      if (
+        e.ctrlKey &&
+        e.key.toLowerCase() === 's' &&
+        this.tabsManager.openedTab
+      ) {
         this.saveFile();
         return;
       } else if (e.ctrlKey && e.key.toLowerCase() === 'n') {
-        this.newTab();
+        this.tabsManager.newTab();
         return;
       }
 
-      if (ignoredKeys.indexOf(e.key) === -1 && this._mode) {
-        const pos = this.caret.getCaretPos();
+      if (ignoredKeys.indexOf(e.key) === -1) {
+        const pos = this.tabsManager.openedTab.caret.getCaretPos();
 
-        this.highlight.highlight();
-        this.caret.setCaretPos(pos);
+        if (
+          this.tabsManager.openedTab &&
+          this.tabsManager.openedTab.highlight
+        ) {
+          this.tabsManager.openedTab.highlight.highlight();
+        }
+        this.tabsManager.openedTab.caret.setCaretPos(pos);
+
+        this.tabsManager.openedTab.fileContent = htmlToText(this.el).join(
+          getLineEndings() === LineEnding.CRLF ? '\r\n' : '\n'
+        );
       }
     });
 
@@ -84,7 +86,7 @@ export class Editor {
         const element = event.dataTransfer.files[index];
 
         this.setContent(window.ds.read(element.path));
-        this.newTab(element.path);
+        this.tabsManager.newTab(element.path);
       }
 
       this.el.classList.remove('drag-over');
@@ -107,38 +109,29 @@ export class Editor {
     });
 
     // on editor creation create tab
-    this.newTab();
+    this.tabsManager.newTab();
 
     this.el.focus();
   }
 
   public saveFile(): void {
     const res = window.ds.write(
-      this.openedTab.path,
+      this.tabsManager.openedTab.path,
       htmlToText(this.el).join(
         getLineEndings() === LineEnding.CRLF ? '\r\n' : '\n'
       )
     );
 
-    if (res.status === 'Success!' && !this.openedTab.path) {
-      this.openedTab.setPath(res.path);
+    if (res.status === 'Success!' && !this.tabsManager.openedTab.path) {
+      this.tabsManager.openedTab.setPath(res.path);
     }
-  }
-
-  public setMode(mode: ILanguage): void {
-    this._mode = mode;
-
-    this.highlight = new Highlighter(this.el, this._mode);
-    this.highlight.highlight();
   }
 
   public setContent(content: string): void {
     this.el.innerHTML = textToHtml(content);
-    this._mode && this.highlight.highlight();
-  }
 
-  public newTab(path: string = ''): void {
-    this.openedTab = new Tab(this, path);
-    this.tabs.push(this.openedTab);
+    if (this.tabsManager.openedTab && this.tabsManager.openedTab.highlight) {
+      this.tabsManager.openedTab.highlight.highlight();
+    }
   }
 }

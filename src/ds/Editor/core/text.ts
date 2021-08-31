@@ -28,3 +28,7 @@ export function htmlToText(element: HTMLElement): string[] {
 
   return content;
 }
+
+export function escapeCharacters(text: string): string {
+  return text.replaceAll('<', '&lt;').replaceAll('>', '&gt;');
+}

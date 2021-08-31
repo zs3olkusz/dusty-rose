@@ -12,12 +12,12 @@ contextBridge.exposeInMainWorld('ds', {
     return ipcRenderer.sendSync('ds:read', path);
   },
   delete(path: PathLike): void {
-    ipcRenderer.send('delete', path);
+    ipcRenderer.send('ds:delete', path);
   },
   mkdir(path: PathLike): void {
-    ipcRenderer.send('mkdir', path);
+    ipcRenderer.send('ds:mkdir', path);
   },
   rename(path: PathLike, newName: string): void {
-    ipcRenderer.send('rename', { path, newName });
+    ipcRenderer.send('ds:rename', path, newName);
   },
 });
