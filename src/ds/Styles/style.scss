@@ -3,6 +3,7 @@
 @use 'window';
 @use 'variables';
 @use 'scrollBar';
+@use 'syntax';
 
 @use 'font';
 // @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap');
@@ -41,4 +42,12 @@ body {
   li {
     user-select: none;
   }
+}
+
+.drag-over {
+  background-color: var(--background2);
+}
+
+.over {
+  opacity: 0.5;
 }

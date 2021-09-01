@@ -1,5 +1,5 @@
 export class Caret {
-  private _editor: HTMLElement;
+  private readonly _editor: HTMLElement;
 
   tab: string = '    ';
 
@@ -19,6 +19,10 @@ export class Caret {
         e.preventDefault();
       }
     });
+  }
+
+  public setTabWidth(value: string): void {
+    this.tab = value;
   }
 
   public getCaretPos(): number {

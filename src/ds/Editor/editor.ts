@@ -1,6 +1,6 @@
-import { Caret } from './core/caret';
-import { Highlighter } from './highlight/highlighter';
-import type { ILanguage } from './highlight/languages/language';
+import { TabsManager } from './tabs/manager';
+import { getLineEndings, LineEnding } from '../utils/files';
+import { textToHtml, htmlToText } from './core/text';
 
 const ignoredKeys = [
   'Alt',
@@ -38,19 +38,10 @@ const ignoredKeys = [
 ];
 
 export class Editor {
-  el: HTMLElement;
-  highlight: Highlighter;
-  mode: ILanguage;
-  caret: Caret;
+  tabsManager: TabsManager;
 
-  constructor(el: HTMLElement, mode: ILanguage = null) {
-    this.el = el;
-
-    this.caret = new Caret(this.el);
-
-    this.mode = mode;
-
-    this.highlight = new Highlighter(this.el, this.mode);
+  constructor(public readonly el: HTMLElement) {
+    this.tabsManager = new TabsManager(this);
 
     this.el.addEventListener('keyup', (e: KeyboardEvent) => {
       // prevent deleting last line in editor
@@ -58,16 +49,89 @@ export class Editor {
         this.el.innerHTML = '<div><br></div>';
       }
 
+      if (
+        e.ctrlKey &&
+        e.key.toLowerCase() === 's' &&
+        this.tabsManager.openedTab
+      ) {
+        this.saveFile();
+        return;
+      } else if (e.ctrlKey && e.key.toLowerCase() === 'n') {
+        this.tabsManager.newTab();
+        return;
+      }
+
       if (ignoredKeys.indexOf(e.key) === -1) {
-        const pos = this.caret.getCaretPos();
+        const pos = this.tabsManager.openedTab.caret.getCaretPos();
 
-        this.highlight.highlight();
-        this.caret.setCaretPos(pos);
+        if (
+          this.tabsManager.openedTab &&
+          this.tabsManager.openedTab.highlight
+        ) {
+          this.tabsManager.openedTab.highlight.highlight();
+        }
+        this.tabsManager.openedTab.caret.setCaretPos(pos);
 
-        return false;
+        this.tabsManager.openedTab.fileContent = htmlToText(this.el).join(
+          getLineEndings() === LineEnding.CRLF ? '\r\n' : '\n'
+        );
       }
     });
 
+    this.el.addEventListener('drop', (event: DragEvent) => {
+      event.preventDefault();
+      event.stopPropagation();
+
+      for (let index = 0; index < event.dataTransfer.files.length; index++) {
+        const element = event.dataTransfer.files[index];
+
+        this.setContent(window.ds.read(element.path));
+        this.tabsManager.newTab(element.path);
+      }
+
+      this.el.classList.remove('drag-over');
+    });
+
+    this.el.addEventListener('dragenter', () =>
+      this.el.classList.add('drag-over')
+    );
+
+    this.el.addEventListener('dragleave', () =>
+      this.el.classList.remove('drag-over')
+    );
+
+    this.el.addEventListener('paste', (e: ClipboardEvent) => {
+      e.preventDefault();
+
+      const data = e.clipboardData.getData('text/plain');
+
+      this.setContent(data);
+    });
+
+    // on editor creation create tab
+    this.tabsManager.newTab();
+
     this.el.focus();
+  }
+
+  public saveFile(): void {
+    const res = window.ds.write(
+      this.tabsManager.openedTab.path,
+      htmlToText(this.el).join(
+        getLineEndings() === LineEnding.CRLF ? '\r\n' : '\n'
+      )
+    );
+
+    if (res.status === 'Success!' && !this.tabsManager.openedTab.path) {
+      this.tabsManager.openedTab.setPath(res.path);
+    }
+  }
+
+  public setContent(content: string): void {
+    this.el.innerHTML = textToHtml(content);
+
+    if (this.tabsManager.openedTab && this.tabsManager.openedTab.highlight) {
+      this.tabsManager.openedTab.highlight.highlight();
+    }
   }
 }
