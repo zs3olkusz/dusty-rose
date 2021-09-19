@@ -223,10 +223,7 @@ export class Highlighter {
     }
 
     // Convert <br> to \n, &lt; to >, and &gt; to >
-    str = str
-      .replaceAll('<br>', '\n')
-      .replaceAll('&lt;', '<')
-      .replaceAll('&gt;', '>');
+    str = str.replaceAll('<br>', '\n');
 
     // Finds all of the matches and stores them into an array
     const matchesArray = this._getMatchesArrayFromRegex(regexObject, str);
@@ -249,7 +246,7 @@ export class Highlighter {
     const textContent = htmlToText(this.el as HTMLElement);
     const result = this._insertSyntaxHighlighting(
       this.mode,
-      textContent.join('\n')
+      textContent.join('\n').replaceAll('<', '&lt;').replaceAll('>', '&gt;')
     );
 
     if (result) {
