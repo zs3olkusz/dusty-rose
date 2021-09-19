@@ -12,8 +12,24 @@ rules.push({
     { loader: 'style-loader' },
     { loader: 'css-loader' },
     { loader: 'sass-loader' },
+    // { loader: 'file-loader' },
   ],
 });
+
+rules.push({
+  test: /\.ttf$/,
+  use: [
+    {
+      loader: 'file-loader',
+    },
+  ],
+});
+
+rules.push(
+  {
+    test: /src.*\.html$/,
+    use: 'html-loader'
+  })
 
 module.exports = {
   module: {
@@ -21,6 +37,6 @@ module.exports = {
   },
   plugins: plugins,
   resolve: {
-    extensions: ['.js', '.ts', '.jsx', '.tsx', '.css', '.sass', '.scss'],
+    extensions: ['.js', '.ts', '.jsx', '.tsx', '.css', '.sass', '.scss', '.ttf'],
   },
 };

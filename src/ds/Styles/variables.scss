@@ -1,7 +1,36 @@
-// https://css-tricks.com/getting-javascript-to-talk-to-css-and-sass/
+:root {
+  --background1: rgba(0, 0, 0, 1);
+  --background2: rgba(128, 128, 128, 0.2);
+  --background3: rgba(52, 52, 52, 1);
 
-$variable: 10;
+  --foreground1: rgba(255, 255, 255, 0.4);
+  --foreground2: rgba(212, 212, 212, 1);
 
-:export {
-  variable: $variable;
+  --transitionTime: 0.2s;
+
+  --scrollBarSize: 0.7rem;
+
+  --asideWidth: 400px;
+  --asideMinWidth: 200px;
+  --asideMenuItemFontSize: 0.5em;
+  --asideMenuItemSize: 50px;
+
+  --footerHeight: 1.5em;
+  --footerFontSize: 14px;
+  --footerItemPaddingHor: 0.5rem;
+
+  --mainFontSize: 18px;
+
+  --navHeight: 50px;
+  --navFontSize: 18px;
+
+  --editorFontSize: 12px;
+  --editorLineCounterWidth: 50px;
+
+  --syntaxColor1: rgb(158, 102, 201);
+  --syntaxColor2: rgb(136, 173, 94);
+  --syntaxColor3: rgb(194, 64, 64);
+  --syntaxColor4: rgb(232, 159, 74);
+  --syntaxColor5: rgb(22, 135, 162);
+  --syntaxColor6: rgb(170, 170, 170);
 }

@@ -10,6 +10,7 @@ module.exports = {
   },
   resolve: {
     extensions: [
+      '.html',
       '.js',
       '.ts',
       '.jsx',
