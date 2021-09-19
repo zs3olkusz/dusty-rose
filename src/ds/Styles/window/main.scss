@@ -1,21 +1,22 @@
 main {
   grid-area: main;
-  height: calc(100vh - var(--footerHeight) - var(--navHeight));
-  font-size: var(--mainFontSize);
+  background-color: rgba(255, 255, 255, 0.8);
+
+  height: calc(100vh - 14px - 50px - 2px);
+  font-size: 18px;
   text-align: left;
-  background-color: var(--background1);
-  color: var(--foreground2);
-  overflow: hidden;
+  color: black;
+  background-color: white;
+
+  overflow: scroll;
 
   .editor {
     font-family: 'Roboto';
-    font-size: var(--editorFontSize);
+    font-size: 12px;
     outline: none;
     overflow-y: auto;
-    padding-left: var(--editorLineCounterWidth);
+    padding-left: 50px;
     counter-reset: line;
-    height: 100%;
-    margin-top: 0.5rem;
 
     div {
       display: block;

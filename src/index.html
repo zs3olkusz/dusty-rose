@@ -3,46 +3,16 @@
   <head>
     <meta charset="UTF-8" />
     <title>Dusty Rose</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
   </head>
   <body>
     <aside>
       <div class="menu-container">
         <ul class="menu">
-          <li data-files title="Explorer" class="menu__item active">
-            <!-- TEMP -->
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              xmlns:xlink="http://www.w3.org/1999/xlink"
-              viewBox="0 0 48 48"
-              width="48px"
-              height="48px"
-            >
-              <g>
-                <path
-                  d="M 8.5 8 C 6.03125 8 4 10.03125 4 12.5 L 4 36.40625 L 4.015625 36.40625 C 3.988281 38.277344 5.507812 40 7.503906 40 L 36.546875 40 C 38.417969 40 40.101562 38.832031 40.761719 37.082031 L 45.769531 23.75 L 45.769531 23.746094 C 46.625 21.5 44.902344 19 42.5 19 L 42 19 L 42 17.5 C 42 15.03125 39.96875 13 37.5 13 L 24.042969 13 L 19.574219 9.273438 C 19.574219 9.273438 19.574219 9.273438 19.570312 9.273438 C 18.585938 8.453125 17.339844 8 16.050781 8 Z M 8.5 11 L 16.050781 11 C 16.636719 11 17.203125 11.207031 17.652344 11.582031 L 22.539062 15.652344 C 22.808594 15.878906 23.148438 16 23.5 16 L 37.5 16 C 38.347656 16 39 16.652344 39 17.5 L 39 19 L 13.453125 19 C 11.582031 19 9.898438 20.167969 9.242188 21.917969 L 7 27.882812 L 7 12.5 C 7 11.652344 7.652344 11 8.5 11 Z M 13.453125 22 L 42.5 22 C 42.898438 22 43.109375 22.304688 42.964844 22.675781 C 42.964844 22.679688 42.960938 22.683594 42.960938 22.6875 L 37.953125 36.027344 C 37.730469 36.617188 37.175781 37 36.546875 37 L 7.503906 37 C 7.105469 37 6.894531 36.695312 7.03125 36.324219 C 7.035156 36.324219 7.035156 36.324219 7.035156 36.324219 L 12.050781 22.972656 C 12.269531 22.382812 12.824219 22 13.453125 22 Z M 13.453125 22 "
-                />
-              </g>
-            </svg>
-          </li>
-          <li data-search title="Search" class="menu__item">
-            <!-- TEMP -->
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              xmlns:xlink="http://www.w3.org/1999/xlink"
-              viewBox="0 0 48 48"
-              width="48px"
-              height="48px"
-            >
-              <g>
-                <path
-                  d="M 20.5 6 C 12.507812 6 6 12.507812 6 20.5 C 6 28.492188 12.507812 35 20.5 35 C 23.957031 35 27.132812 33.777344 29.628906 31.75 L 39.4375 41.558594 C 39.816406 41.953125 40.375 42.109375 40.898438 41.972656 C 41.425781 41.835938 41.835938 41.425781 41.972656 40.898438 C 42.109375 40.375 41.953125 39.816406 41.558594 39.4375 L 31.75 29.628906 C 33.777344 27.132812 35 23.957031 35 20.5 C 35 12.507812 28.492188 6 20.5 6 Z M 20.5 9 C 26.867188 9 32 14.132812 32 20.5 C 32 23.601562 30.777344 26.40625 28.789062 28.472656 C 28.667969 28.5625 28.5625 28.667969 28.46875 28.792969 C 26.40625 30.777344 23.601562 32 20.5 32 C 14.132812 32 9 26.867188 9 20.5 C 9 14.132812 14.132812 9 20.5 9 Z M 20.5 9 "
-                />
-              </g>
-            </svg>
-          </li>
+          <!-- <li data-files><img src="" alt="Files" /></li> -->
+          <li data-files title="Explorer">&#128193;</li>
+          <li data-files title="Search">&#128270;</li>
         </ul>
-        <div class="content resizable" data-min-width="200">
+        <div class="content">
           <div class="file-struct" data-files>
             <ul class="dir">
               <li>
@@ -72,26 +42,29 @@
     </aside>
 
     <nav>
-      <ul class="opened-tabs" id="tabs"></ul>
+      <ul>
+        <li>
+          <p>
+            <span class="file__type">&#128459;</span> index.html
+            <button class="file__close" title="Close file">⨯</button>
+          </p>
+        </li>
+      </ul>
     </nav>
 
     <main>
       <div id="editor" class="editor" contenteditable="true" spellcheck="false">
-        <div><br /></div>
       </div>
     </main>
 
     <footer>
       <div class="dummy"></div>
       <ul>
-        <li id="cursorPos">Ln 24, Col 7</li>
-        <li><label for="spaces">Spaces: </label><select id="spaces">
-          <option value="  " selected>2</option>
-          <option value="     ">4</option>
-          <option value="       ">6</option>
-          <option value="         ">8</option>
-        </select></li>
-        <li id="mode">Text</li>
+        <li>Ln 24, Col 7</li>
+        <li>Spaces: 2</li>
+        <li>UTF-8</li>
+        <li>CRLF</li>
+        <li>html</li>
       </ul>
     </footer>
   </body>
