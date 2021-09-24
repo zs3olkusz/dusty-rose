@@ -20,4 +20,7 @@ contextBridge.exposeInMainWorld('ds', {
   rename(path: PathLike, newName: string): void {
     ipcRenderer.send('ds:rename', path, newName);
   },
+  explore(path: PathLike): ExplolerItem[] {
+    return ipcRenderer.sendSync('ds:explore', path);
+  },
 });

@@ -1,6 +1,7 @@
 import { TabsManager } from './tabs/manager';
 import { getLineEndings, LineEnding } from '../utils/files';
 import { textToHtml, htmlToText } from './core/text';
+import { WorkSpace } from './workspace';
 
 const ignoredKeys = [
   'Alt',
@@ -39,9 +40,12 @@ const ignoredKeys = [
 
 export class Editor {
   tabsManager: TabsManager;
+  workspace: WorkSpace;
 
   constructor(public readonly el: HTMLElement) {
     this.tabsManager = new TabsManager(this);
+
+    this.workspace = new WorkSpace('F:/Projects/learning-css');
 
     this.el.addEventListener('keyup', (e: KeyboardEvent) => {
       // prevent deleting last line in editor

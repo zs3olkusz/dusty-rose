@@ -1,10 +1,17 @@
 import { app, BrowserWindow, dialog, ipcMain, Menu } from 'electron';
 import { Settings } from './settings';
-import { DSMenu } from './ds/Menu';
+import { DSMenu } from './main/menu';
+import { FileWatcher } from './main/files/watcher';
 import fs, { PathLike } from 'fs';
 import path from 'path';
 
 declare global {
+  interface ExplolerItem {
+    name: string;
+    isDirectory: boolean;
+    isFile: boolean;
+  }
+
   interface Window {
     ds: {
       platform(): string;
@@ -13,6 +20,7 @@ declare global {
       delete(path: PathLike): void;
       mkdir(path: PathLike): void;
       rename(path: PathLike, newName: string): void;
+      explore(path: PathLike): ExplolerItem[];
     };
   }
 }
@@ -24,6 +32,7 @@ declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
 declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 
 let mainWindow: BrowserWindow = null;
+let fw: FileWatcher | null = null;
 
 ipcMain.on('ds:read', (event, path: string) => {
   event.returnValue = fs.existsSync(path)
@@ -44,10 +53,12 @@ ipcMain.on('ds:write', (event, path: string, data: string) => {
 
     fs.writeFile(filePath, data, { encoding: 'utf8' }, (err) => {
       err && (status = err.message);
+      dialog.showErrorBox('Cannot save file!', err.message);
     });
   } else {
     fs.writeFile(path, data, { encoding: 'utf8' }, (err) => {
       err && (status = err.message);
+      dialog.showErrorBox('Cannot save file!', err.message);
     });
   }
 
@@ -56,6 +67,70 @@ ipcMain.on('ds:write', (event, path: string, data: string) => {
 
 ipcMain.on('ds:platform', (event) => {
   event.returnValue = process.platform;
+});
+
+ipcMain.on('ds:workDir', (event) => {
+  let fileSelectionPromise = dialog.showOpenDialog({
+    properties: ['openFile', 'openDirectory', 'multiSelections'],
+  });
+
+  fileSelectionPromise.then(function (obj) {
+    event.sender.send('selectedfolders', obj.filePaths);
+
+    obj.filePaths
+      .map((filePath) => {
+        return fs
+          .readdirSync(filePath, { withFileTypes: true })
+
+          .filter((dirent) => !dirent.isDirectory())
+
+          .map((dirent) => filePath + '/' + dirent.name);
+      })
+      .reduce((filesacc, files) => {
+        filesacc = filesacc.concat(files);
+
+        return filesacc;
+      })
+      .every((absolutefilepath) => {
+        let stats: fs.Stats = fs.statSync(absolutefilepath);
+
+        event.sender.send('fileslist', path.basename(absolutefilepath), stats);
+
+        return true;
+      });
+  });
+});
+
+ipcMain.on('ds:explore', (event, path: string) => {
+  const explored: ExplolerItem[] = [];
+
+  fs.readdirSync(path, {
+    encoding: 'utf8',
+    withFileTypes: true,
+  }).map((item) => {
+    explored.push({
+      ...item,
+      isDirectory: item.isDirectory(),
+      isFile: item.isFile(),
+    });
+  });
+
+  event.returnValue = explored
+    .sort((a, b) => {
+      let na = a.name.toLowerCase();
+      let nb = b.name.toLowerCase();
+
+      if (na < nb) {
+        return 1;
+      }
+
+      if (na > nb) {
+        return -1;
+      }
+
+      return 0;
+    })
+    .sort((a, b) => (a === b ? 0 : a ? -1 : 1));
 });
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
