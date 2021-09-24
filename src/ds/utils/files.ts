@@ -36,11 +36,11 @@ export function checkLineEndings(text: string): null | LineEnding {
 }
 
 export function getLineEndings(): LineEnding {
-  return window.ds.platform() === 'win32' ? LineEnding.CRLF : LineEnding.LF;
+  return window.ds.platform === 'win32' ? LineEnding.CRLF : LineEnding.LF;
 }
 
 export function convertWindowsPathToUnixPath(path: string): string {
-  if (window.ds.platform() === 'win32') {
+  if (window.ds.platform === 'win32') {
     path = path.replace(/\\/g, '/');
   }
   return path;

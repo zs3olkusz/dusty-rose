@@ -2,9 +2,7 @@ import { ipcRenderer, contextBridge } from 'electron';
 import { PathLike } from 'fs';
 
 contextBridge.exposeInMainWorld('ds', {
-  platform(): string {
-    return ipcRenderer.sendSync('ds:platform');
-  },
+  platform: process.platform,
   write(path: PathLike, data: string): string {
     return ipcRenderer.sendSync('ds:write', path, data);
   },

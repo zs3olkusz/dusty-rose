@@ -14,7 +14,7 @@ declare global {
 
   interface Window {
     ds: {
-      platform(): string;
+      platform: string;
       write(path: PathLike, data: string): { status: string; path: string };
       read(path: PathLike): string;
       delete(path: PathLike): void;
@@ -63,10 +63,6 @@ ipcMain.on('ds:write', (event, path: string, data: string) => {
   }
 
   event.returnValue = { status, path: path ? path : filePath };
-});
-
-ipcMain.on('ds:platform', (event) => {
-  event.returnValue = process.platform;
 });
 
 ipcMain.on('ds:workDir', (event) => {
