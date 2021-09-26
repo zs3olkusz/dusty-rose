@@ -1,10 +1,10 @@
 @use 'aside';
-@use 'footer';
-@use 'window';
 @use 'contextMenu';
-@use 'variables';
+@use 'editor';
+@use 'footer';
 @use 'scrollBar';
 @use 'syntax';
+@use 'variables';
 
 @use 'font';
 // @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap');
@@ -25,11 +25,8 @@ html {
 }
 
 body {
-  display: grid;
-  grid-template-areas:
-    'menu header header header'
-    'menu main main main'
-    'footer footer footer footer';
+  display: flex;
+  flex-direction: column;
   background-color: var(--background1);
   overflow: hidden;
 
@@ -43,6 +40,12 @@ body {
   li {
     user-select: none;
   }
+
+  div {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+  }
 }
 
 .drag-over {
@@ -51,4 +54,18 @@ body {
 
 .over {
   opacity: 0.5;
+}
+
+#resizer {
+  background-color: var(--background3);
+  cursor: ew-resize;
+  min-height: 100%;
+  max-width: 1px;
+
+  transition: background-color 500ms ease-in-out;
+
+  &:hover {
+    max-width: 3px;
+    background-color: var(--foreground1);
+  }
 }
