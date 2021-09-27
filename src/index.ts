@@ -1,7 +1,6 @@
 import { app, BrowserWindow, dialog, ipcMain, Menu } from 'electron';
 import { Settings } from './settings';
-import { DSMenu } from './main/menu';
-import { FileWatcher } from './main/files/watcher';
+import { DSMenu } from './ds/Menu';
 import fs, { PathLike } from 'fs';
 import path from 'path';
 
@@ -32,7 +31,6 @@ declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
 declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 
 let mainWindow: BrowserWindow = null;
-let fw: FileWatcher | null = null;
 
 ipcMain.on('ds:read', (event, path: string) => {
   event.returnValue = fs.existsSync(path)
