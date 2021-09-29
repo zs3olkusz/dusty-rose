@@ -82,12 +82,13 @@ export class Editor {
       }
     });
 
-    this.el.addEventListener('drop', (event: DragEvent) => {
-      event.preventDefault();
-      event.stopPropagation();
+    this.el.addEventListener('drop', (e: DragEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
 
-      for (let index = 0; index < event.dataTransfer.files.length; index++) {
-        const element = event.dataTransfer.files[index];
+      const files = e.dataTransfer.files;
+      for (let index = 0; index < files.length; index++) {
+        const element = files[index];
 
         this.setContent(window.ds.read(element.path));
         this.tabsManager.newTab(element.path);
