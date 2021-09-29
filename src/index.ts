@@ -1,8 +1,9 @@
 import { app, BrowserWindow, dialog, ipcMain, Menu } from 'electron';
-import { Settings } from './settings';
+import settings from 'electron-settings';
 import { DSMenu } from './ds/Menu';
 import fs, { PathLike } from 'fs';
 import path from 'path';
+import { initSettings } from './main/settings';
 
 declare global {
   interface ExplolerItem {
@@ -20,6 +21,7 @@ declare global {
       mkdir(path: PathLike): void;
       rename(path: PathLike, newName: string): void;
       explore(path: PathLike): ExplolerItem[];
+      getSetting<T>(key: string): T;
     };
   }
 }
@@ -31,6 +33,8 @@ declare const MAIN_WINDOW_WEBPACK_ENTRY: string;
 declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 
 let mainWindow: BrowserWindow = null;
+
+initSettings();
 
 ipcMain.on('ds:read', (event, path: string) => {
   event.returnValue = fs.existsSync(path)
@@ -143,32 +147,37 @@ ipcMain.on('ds:explore', (event, path: string) => {
     .sort((a, b) => (a === b ? 0 : a ? -1 : 1));
 });
 
+ipcMain.on('ds:getSetting', async (event, key: string) => {
+  event.returnValue = settings.getSync(key) || null;
+});
+
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 if (require('electron-squirrel-startup')) {
   app.quit();
 }
 
 const createWindow = (): void => {
-  const settings = new Settings({
-    configName: 'settings',
-    defaults: {
-      windowBounds: { width: 800, height: 600 },
-      fullscreen: false,
-    },
-  });
-
   // Create the browser window.
   mainWindow = new BrowserWindow({
-    // ...settings.get('windowBounds'),
-    // minHeight: 600,
-    // minWidth: 800,
-    // fullscreen: settings.get('fullscreen'),
+    ...(settings.getSync('windowBounds') as {
+      width: number;
+      height: number;
+    }),
+    minHeight: 600,
+    minWidth: 800,
+    fullscreen: (settings.getSync('fullscreen') as boolean) || false,
 
-    height: 1080,
-    width: 1920,
+    x: settings.getSync('x') as number,
+    y: settings.getSync('y') as number,
+
+    backgroundColor:
+      (settings.getSync('theme.background1HEX') as string) || '#fff',
 
     webPreferences: {
+      zoomFactor: (settings.getSync('zoomFactor') as number) || 1.0,
+
       preload: MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY,
+      enableRemoteModule: true,
     },
   });
 
@@ -194,6 +203,13 @@ const createWindow = (): void => {
 
   mainWindow.on('leave-full-screen', () => {
     settings.set('fullscreen', mainWindow.isFullScreen());
+  });
+
+  mainWindow.on('close', () => {
+    const [x, y] = mainWindow.getPosition();
+
+    settings.set('x', x);
+    settings.set('y', y);
   });
 };
 

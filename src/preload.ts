@@ -21,4 +21,7 @@ contextBridge.exposeInMainWorld('ds', {
   explore(path: PathLike): ExplolerItem[] {
     return ipcRenderer.sendSync('ds:explore', path);
   },
+  getSetting<T>(key: string): T {
+    return ipcRenderer.sendSync('ds:getSetting', key);
+  },
 });
