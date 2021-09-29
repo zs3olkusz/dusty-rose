@@ -54,7 +54,7 @@ function getContextMenuOptions({
       {
         name: 'Delete',
         handler: () => {
-          window.ds.delete(path);
+          window.ds.delete(path, false);
         },
       },
     ];
@@ -78,7 +78,7 @@ function getContextMenuOptions({
     {
       name: 'Delete',
       handler: () => {
-        window.ds.delete(path);
+        window.ds.delete(path, true);
       },
     },
   ];

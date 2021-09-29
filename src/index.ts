@@ -16,7 +16,7 @@ declare global {
       platform: string;
       write(path: PathLike, data: string): { status: string; path: string };
       read(path: PathLike): string;
-      delete(path: PathLike): void;
+      delete(path: PathLike, isFile: boolean): void;
       mkdir(path: PathLike): void;
       rename(path: PathLike, newName: string): void;
       explore(path: PathLike): ExplolerItem[];
@@ -61,6 +61,22 @@ ipcMain.on('ds:write', (event, path: string, data: string) => {
   }
 
   event.returnValue = { status, path: path ? path : filePath };
+});
+
+ipcMain.on('ds:rename', (event, oldPath: string, newPath: string) => {
+  fs.renameSync(oldPath, newPath);
+});
+
+ipcMain.on('ds:delete', (event, path: string, isFile: boolean) => {
+  if (isFile) {
+    fs.rmSync(path);
+  } else {
+    fs.rmdirSync(path);
+  }
+});
+
+ipcMain.on('ds:mkdir', (event, path: string) => {
+  fs.mkdirSync(path);
 });
 
 ipcMain.on('ds:workDir', (event) => {

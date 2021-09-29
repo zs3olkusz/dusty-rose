@@ -9,8 +9,8 @@ contextBridge.exposeInMainWorld('ds', {
   read(path: PathLike): string {
     return ipcRenderer.sendSync('ds:read', path);
   },
-  delete(path: PathLike): void {
-    ipcRenderer.send('ds:delete', path);
+  delete(path: PathLike, isFile: boolean): void {
+    ipcRenderer.send('ds:delete', path, isFile);
   },
   mkdir(path: PathLike): void {
     ipcRenderer.send('ds:mkdir', path);
