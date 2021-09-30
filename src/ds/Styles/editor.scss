@@ -39,7 +39,7 @@
 
         &:hover .file__close {
           opacity: 1;
-          transition: var(--transitionTime);
+          transition: var(--transitionTime1);
         }
 
         .file__close {
@@ -49,7 +49,7 @@
           &:hover {
             background-color: var(--background3);
             color: var(--foreground2);
-            transition: var(--transitionTime);
+            transition: var(--transitionTime1);
           }
         }
       }

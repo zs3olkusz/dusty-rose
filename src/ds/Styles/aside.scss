@@ -13,7 +13,7 @@ aside {
 
     .dir,
     ul {
-      margin-left: 20px;
+      margin-left: var(--fileExplorerItemDepthSize);
       list-style-type: none;
       color: var(--foreground2);
     }
@@ -23,14 +23,14 @@ aside {
       padding: 0;
 
       li[data-is-directory='false']::before {
-        content: '🗎';
+        content: var(--fileExplorerItemFileIcon);
 
         display: inline-block;
 
         margin-right: 6px;
 
         color: var(--foreground2);
-        font-size: 12px;
+        font-size: var(--fileExplorerItemIconSize);
       }
 
       .caret {
@@ -38,18 +38,18 @@ aside {
         user-select: none;
 
         &::before {
-          content: '🗀';
+          content: var(--fileExplorerItemFolderIcon);
           display: inline-block;
 
           margin-right: 6px;
 
           color: var(--foreground2);
-          font-size: 12px;
+          font-size: var(--fileExplorerItemIconSize);
         }
       }
 
       .caret-down::before {
-        content: '🗁';
+        content: var(--fileExplorerItemFolderOpenIcon);
       }
 
       .nested {

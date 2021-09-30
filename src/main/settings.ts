@@ -41,8 +41,16 @@ const defaultSettings: ISetting[] = [
     default: 'rgba(212, 212, 212, 1)',
   },
   {
-    name: 'theme.transitionTime',
-    default: '0.2s',
+    name: 'theme.fontFamily',
+    default: "'Roboto', Arial, 'Fira Code iScript'",
+  },
+  {
+    name: 'theme.transitionTime1',
+    default: '0.25s',
+  },
+  {
+    name: 'theme.transitionTime1',
+    default: '0.5s',
   },
   {
     name: 'theme.scrollBarSize',
@@ -57,12 +65,24 @@ const defaultSettings: ISetting[] = [
     default: '200px',
   },
   {
-    name: 'theme.asideMenuItemFontSize',
-    default: '0.5em',
+    name: 'theme.fileExplorerItemDepthSize',
+    default: '20px',
   },
   {
-    name: 'theme.asideMenuItemSize',
-    default: '50px',
+    name: 'theme.fileExplorerItemIconSize',
+    default: '12px',
+  },
+  {
+    name: 'theme.fileExplorerItemFolderIcon',
+    default: '🗀',
+  },
+  {
+    name: 'theme.fileExplorerItemFolderOpenIcon',
+    default: '🗁',
+  },
+  {
+    name: 'theme.fileExplorerItemFileIcon',
+    default: '🗎',
   },
   {
     name: 'theme.footerHeight',

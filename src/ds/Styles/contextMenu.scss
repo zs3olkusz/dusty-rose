@@ -1,18 +1,19 @@
 .context-menu {
   display: none;
   position: fixed;
-  width: 140px;
-  box-shadow: 2px 2px 9px #aaa;
   overflow: hidden;
-  border: solid 1px #aaa;
+  width: 140px;
+  border: 1px solid var(--background3);
+  box-shadow: 1px 1px 3px var(--foreground3);
 }
 
 .context-menu > div {
   padding: 10px;
-  background: #eee;
-  border-bottom: 1px solid #ccc;
-  cursor: pointer;
+  background: var(--background1);
+  border-bottom: 1px solid var(--background3);
   font-size: 11pt;
+  color: var(--foreground2);
+  cursor: pointer;
 }
 
 .context-menu > div:last-of-type {
@@ -20,7 +21,7 @@
 }
 
 .context-menu > div:hover {
-  background: #fff;
+  background: var(--background3);
 }
 
 .context-menu.show {
