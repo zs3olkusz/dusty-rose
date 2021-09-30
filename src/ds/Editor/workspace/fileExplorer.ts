@@ -1,4 +1,5 @@
 import { getBaseName } from '../../utils/files';
+import { Dialog } from '../core/dialog';
 
 interface IContextMenuAction {
   name: string;
@@ -19,36 +20,65 @@ function getContextMenuOptions({
       {
         name: 'Create folder',
         handler: () => {
-          const folderName = 'testNameCreate';
-
-          if (folderName !== null) {
-            window.ds.mkdir(`${path}/${folderName}`);
-          }
+          new Dialog({
+            label: "Folder's name:",
+            callback: (folderName: string) => {
+              if (folderName) {
+                window.ds.mkdir(`${path}/${folderName}`);
+              }
+            },
+            placeholder: 'example',
+            inputAttrs: {
+              type: 'text',
+              required: 'true',
+            },
+            type: 'input',
+          });
         },
       },
       {
         name: 'Create file',
         handler: () => {
-          const fileName = 'testNameCreate.txt';
-
-          if (fileName !== null) {
-            window.ds.write(`${path}/${fileName}`, '');
-          }
+          new Dialog({
+            label: "File's name:",
+            callback: (fileName: string) => {
+              if (fileName) {
+                window.ds.write(`${path}/${fileName}`, '');
+              }
+            },
+            placeholder: 'example',
+            inputAttrs: {
+              type: 'text',
+              required: 'true',
+            },
+            type: 'input',
+          });
         },
       },
       {
         name: 'Rename',
         handler: (e: MouseEvent) => {
-          const newName = 'testName';
+          new Dialog({
+            label: "Folder's new name:",
+            callback: (newName: string) => {
+              if (newName) {
+                const lastSlash = path.lastIndexOf('/');
+                const basePath = path.slice(0, lastSlash)[0];
 
-          const lastSlash = path.lastIndexOf('/');
-          const basePath = path.slice(0, lastSlash)[0];
+                window.ds.rename(path, `${basePath}/${newName}`);
 
-          if (newName !== null) {
-            window.ds.rename(path, `${basePath}/${newName}`);
-
-            (e.target as HTMLElement).dataset.path = `${basePath}/${newName}`;
-          }
+                (
+                  e.target as HTMLElement
+                ).dataset.path = `${basePath}/${newName}`;
+              }
+            },
+            placeholder: 'example',
+            inputAttrs: {
+              type: 'text',
+              required: 'true',
+            },
+            type: 'input',
+          });
         },
       },
       {
@@ -63,16 +93,25 @@ function getContextMenuOptions({
     {
       name: 'Rename',
       handler: (e: MouseEvent) => {
-        const newName = 'testName.txt';
+        new Dialog({
+          label: "File's new name:",
+          callback: (newName: string) => {
+            if (newName) {
+              const lastSlash = path.lastIndexOf('/');
+              const basePath = path.slice(0, lastSlash)[0];
 
-        const lastSlash = path.lastIndexOf('/');
-        const basePath = path.slice(0, lastSlash)[0];
+              window.ds.rename(path, `${basePath}/${newName}`);
 
-        if (newName !== null) {
-          window.ds.rename(path, `${basePath}/${newName}`);
-
-          (e.target as HTMLElement).dataset.path = `${basePath}/${newName}`;
-        }
+              (e.target as HTMLElement).dataset.path = `${basePath}/${newName}`;
+            }
+          },
+          placeholder: 'example',
+          inputAttrs: {
+            type: 'text',
+            required: 'true',
+          },
+          type: 'input',
+        });
       },
     },
     {
@@ -162,7 +201,10 @@ export class FileExplorer {
     actions.forEach((action) => {
       const menuItem = document.createElement('div');
       menuItem.innerHTML = action.name;
-      menuItem.addEventListener('click', action.handler);
+      menuItem.addEventListener('click', (e: MouseEvent) => {
+        action.handler(e);
+        this._init();
+      });
 
       context.appendChild(menuItem);
     });

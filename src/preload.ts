@@ -10,13 +10,13 @@ contextBridge.exposeInMainWorld('ds', {
     return ipcRenderer.sendSync('ds:read', path);
   },
   delete(path: PathLike, isFile: boolean): void {
-    ipcRenderer.send('ds:delete', path, isFile);
+    ipcRenderer.sendSync('ds:delete', path, isFile);
   },
   mkdir(path: PathLike): void {
-    ipcRenderer.send('ds:mkdir', path);
+    ipcRenderer.sendSync('ds:mkdir', path);
   },
   rename(path: PathLike, newName: string): void {
-    ipcRenderer.send('ds:rename', path, newName);
+    ipcRenderer.sendSync('ds:rename', path, newName);
   },
   explore(path: PathLike): ExplolerItem[] {
     return ipcRenderer.sendSync('ds:explore', path);
