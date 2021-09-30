@@ -258,6 +258,14 @@ export class FileExplorer {
       el.appendChild(ul);
     } else {
       el.textContent = name;
+      el.draggable = true;
+
+      el.addEventListener('dragstart', (e: DragEvent) => {
+        e.dataTransfer.setData(
+          'text/plain',
+          (e.target as HTMLElement).dataset.path
+        );
+      });
     }
 
     return el;

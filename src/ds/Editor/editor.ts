@@ -86,6 +86,14 @@ export class Editor {
       e.preventDefault();
       e.stopPropagation();
 
+      const path = e.dataTransfer.getData('text');
+      if (path) {
+        this.setContent(window.ds.read(path));
+        this.tabsManager.newTab(path);
+
+        e.dataTransfer.clearData();
+      }
+
       const files = e.dataTransfer.files;
       for (let index = 0; index < files.length; index++) {
         const element = files[index];
@@ -95,6 +103,10 @@ export class Editor {
       }
 
       this.el.classList.remove('drag-over');
+    });
+
+    this.el.addEventListener('dragover', (e: DragEvent) => {
+      e.preventDefault();
     });
 
     this.el.addEventListener('dragenter', () =>
