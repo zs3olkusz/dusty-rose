@@ -1,12 +1,10 @@
 @use 'aside';
+@use 'contextMenu';
+@use 'dialog';
+@use 'editor';
 @use 'footer';
-@use 'window';
-@use 'variables';
 @use 'scrollBar';
 @use 'syntax';
-
-@use 'font';
-// @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap');
 
 *,
 *::before,
@@ -14,8 +12,7 @@
   box-sizing: border-box;
   padding: 0;
   margin: 0;
-  // TODO fix: font is not loading
-  font-family: 'Roboto', Arial, 'Fira Code iScript';
+  font-family: var(--fontFamily);
 }
 
 html {
@@ -24,11 +21,8 @@ html {
 }
 
 body {
-  display: grid;
-  grid-template-areas:
-    'menu header header header'
-    'menu main main main'
-    'footer footer footer footer';
+  display: flex;
+  flex-direction: column;
   background-color: var(--background1);
   overflow: hidden;
 
@@ -42,6 +36,12 @@ body {
   li {
     user-select: none;
   }
+
+  div {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+  }
 }
 
 .drag-over {
@@ -50,4 +50,18 @@ body {
 
 .over {
   opacity: 0.5;
+}
+
+#resizer {
+  background-color: var(--background3);
+  cursor: ew-resize;
+  min-height: 100%;
+  max-width: 1px;
+
+  transition: background-color var(--transitionTime2) ease-in-out;
+
+  &:hover {
+    max-width: 3px;
+    background-color: var(--foreground1);
+  }
 }

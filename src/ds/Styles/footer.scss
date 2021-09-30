@@ -1,0 +1,53 @@
+.footer {
+  display: flex;
+
+  z-index: 10;
+
+  height: var(--footerHeight);
+  width: 100%;
+  margin-top: -8px;
+  background-color: var(--background1);
+
+  font-size: var(--footerFontSize);
+
+  user-select: none;
+
+  .footer__item {
+    width: max-content;
+    padding: calc(var(--footerItemPaddingHor) / 4) var(--footerItemPaddingHor);
+
+    color: var(--foreground1);
+
+    cursor: pointer;
+
+    transition: all var(--transitionTime1) linear;
+
+    &:hover {
+      background-color: var(--background2);
+      color: var(--foreground2);
+    }
+
+    &.dummy {
+      margin-right: auto;
+      visibility: hidden;
+    }
+
+    select {
+      width: 5ch;
+      margin-right: calc(-5ch + var(--footerItemPaddingHor));
+      background-color: transparent;
+      appearance: none;
+      cursor: pointer;
+      border: none;
+      outline: none;
+
+      color: var(--foreground1);
+
+      option {
+        width: 15ch;
+        outline-color: var(--background2);
+        white-space: normal;
+      }
+    }
+  }
+}

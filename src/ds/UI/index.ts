@@ -1,12 +1,13 @@
-import { initFileStruct } from './aside';
-
 import { Editor } from '../Editor/editor';
-
+import { loadTheme } from '../Editor/theme';
+import { resizable } from './resizable';
 
 export function renderer(): void {
-  initFileStruct();
+  loadTheme();
 
   const editorEl = document.getElementById('editor');
 
   const editor = new Editor(editorEl);
+
+  resizable();
 }

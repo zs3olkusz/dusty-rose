@@ -1,6 +1,7 @@
 import { TabsManager } from './tabs/manager';
 import { getLineEndings, LineEnding } from '../utils/files';
 import { textToHtml, htmlToText } from './core/text';
+import { WorkSpace } from './workspace';
 
 const ignoredKeys = [
   'Alt',
@@ -39,9 +40,12 @@ const ignoredKeys = [
 
 export class Editor {
   tabsManager: TabsManager;
+  workspace: WorkSpace;
 
   constructor(public readonly el: HTMLElement) {
     this.tabsManager = new TabsManager(this);
+
+    this.workspace = new WorkSpace('F:/Projects/learning-css');
 
     this.el.addEventListener('keyup', (e: KeyboardEvent) => {
       // prevent deleting last line in editor
@@ -78,18 +82,31 @@ export class Editor {
       }
     });
 
-    this.el.addEventListener('drop', (event: DragEvent) => {
-      event.preventDefault();
-      event.stopPropagation();
+    this.el.addEventListener('drop', (e: DragEvent) => {
+      e.preventDefault();
+      e.stopPropagation();
 
-      for (let index = 0; index < event.dataTransfer.files.length; index++) {
-        const element = event.dataTransfer.files[index];
+      const path = e.dataTransfer.getData('text');
+      if (path) {
+        this.setContent(window.ds.read(path));
+        this.tabsManager.newTab(path);
+
+        e.dataTransfer.clearData();
+      }
+
+      const files = e.dataTransfer.files;
+      for (let index = 0; index < files.length; index++) {
+        const element = files[index];
 
         this.setContent(window.ds.read(element.path));
         this.tabsManager.newTab(element.path);
       }
 
       this.el.classList.remove('drag-over');
+    });
+
+    this.el.addEventListener('dragover', (e: DragEvent) => {
+      e.preventDefault();
     });
 
     this.el.addEventListener('dragenter', () =>
