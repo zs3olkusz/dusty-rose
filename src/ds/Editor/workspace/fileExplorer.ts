@@ -287,6 +287,33 @@ export class FileExplorer {
         this._expandFolder(e, item);
       });
 
+      el.addEventListener('drop', (e: DragEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+
+        const path = e.dataTransfer.getData('text');
+        if (path) {
+          const newPath = `${item.path}/${getBaseName(path)}`;
+
+          window.ds.rename(path, newPath);
+
+          e.dataTransfer.clearData();
+        }
+
+        this._expandFolder(e, item);
+        this._init();
+
+        el.classList.remove('drag-over');
+      });
+
+      el.addEventListener('dragover', (e: DragEvent) => {
+        e.preventDefault();
+      });
+
+      el.addEventListener('dragenter', () => el.classList.add('drag-over'));
+
+      el.addEventListener('dragleave', () => el.classList.remove('drag-over'));
+
       el.appendChild(span);
 
       const ul = document.createElement('ul');
@@ -300,15 +327,16 @@ export class FileExplorer {
       el.appendChild(ul);
     } else {
       el.textContent = name;
-      el.draggable = true;
-
-      el.addEventListener('dragstart', (e: DragEvent) => {
-        e.dataTransfer.setData(
-          'text/plain',
-          (e.target as HTMLElement).dataset.path
-        );
-      });
     }
+
+    el.draggable = true;
+
+    el.addEventListener('dragstart', (e: DragEvent) => {
+      e.dataTransfer.setData(
+        'text/plain',
+        (e.target as HTMLElement).dataset.path
+      );
+    });
 
     return el;
   }
