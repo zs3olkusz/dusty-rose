@@ -62,14 +62,12 @@ function getContextMenuOptions({
             label: "Folder's new name:",
             callback: (newName: string) => {
               if (newName) {
-                const lastSlash = path.lastIndexOf('/');
-                const basePath = path.slice(0, lastSlash)[0];
+                const basePath = path.split(getBaseName(path))[0];
+                const newPath = `${basePath}/${newName}`;
 
-                window.ds.rename(path, `${basePath}/${newName}`);
+                window.ds.rename(path, newPath);
 
-                (
-                  e.target as HTMLElement
-                ).dataset.path = `${basePath}/${newName}`;
+                (e.target as HTMLElement).dataset.path = newPath;
               }
             },
             placeholder: 'example',
@@ -97,12 +95,12 @@ function getContextMenuOptions({
           label: "File's new name:",
           callback: (newName: string) => {
             if (newName) {
-              const lastSlash = path.lastIndexOf('/');
-              const basePath = path.slice(0, lastSlash)[0];
+              const basePath = path.split(getBaseName(path))[0];
+              const newPath = `${basePath}/${newName}`;
 
-              window.ds.rename(path, `${basePath}/${newName}`);
+              window.ds.rename(path, newPath);
 
-              (e.target as HTMLElement).dataset.path = `${basePath}/${newName}`;
+              (e.target as HTMLElement).dataset.path = newPath;
             }
           },
           placeholder: 'example',
