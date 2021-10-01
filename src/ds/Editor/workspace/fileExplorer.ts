@@ -159,6 +159,8 @@ export class FileExplorer {
   tree: Item;
 
   constructor(path: string) {
+    if (!window.ds.explore(path)) return;
+
     this.tree = new Item(path, false, true, true);
 
     this._init();
