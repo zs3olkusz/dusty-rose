@@ -1,8 +1,7 @@
 import { app, BrowserWindow, dialog, ipcMain, Menu } from 'electron';
 import settings from 'electron-settings';
-import { DSMenu } from './ds/Menu';
 import fs, { PathLike } from 'fs';
-import path from 'path';
+import { DSMenu } from './ds/Menu';
 import { initSettings } from './main/settings';
 
 declare global {
@@ -15,8 +14,8 @@ declare global {
   interface Window {
     ds: {
       platform: string;
-      write(path: PathLike, data: string): { status: string; path: string };
-      read(path: PathLike): string;
+      write(path: PathLike, data: string): string;
+      read(path: PathLike): string | null;
       delete(path: PathLike, isFile: boolean): void;
       mkdir(path: PathLike): void;
       rename(path: PathLike, newName: string): void;
@@ -37,114 +36,111 @@ let mainWindow: BrowserWindow = null;
 initSettings();
 
 ipcMain.on('ds:read', (event, path: string) => {
-  event.returnValue = fs.existsSync(path)
-    ? fs.statSync(path).isFile()
-      ? fs.readFileSync(path, 'utf8').length < 25_000
-        ? fs.readFileSync(path, 'utf8')
-        : 'File too big!'
-      : 'Not a file!'
-    : 'File does not exists!';
-});
+  try {
+    const exists = fs.existsSync(path);
 
-ipcMain.on('ds:write', (event, path: string, data: string) => {
-  let status = 'Success!';
-  let filePath = '';
+    if (exists) {
+      const fileContent = fs.readFileSync(path, 'utf8');
 
-  if (path.length === 0) {
-    filePath = dialog.showSaveDialogSync(mainWindow);
-
-    fs.writeFile(filePath, data, { encoding: 'utf8' }, (err) => {
-      err && (status = err.message);
-      dialog.showErrorBox('Cannot save file!', err.message);
-    });
-  } else {
-    fs.writeFile(path, data, { encoding: 'utf8' }, (err) => {
-      err && (status = err.message);
-      dialog.showErrorBox('Cannot save file!', err.message);
-    });
+      if (fileContent.length < 100_000) {
+        event.returnValue = fileContent;
+      } else {
+        throw Error(`File at ${path} is too big to open.`);
+      }
+    } else {
+      throw Error(`File at ${path} does not exists.`);
+    }
+  } catch (err) {
+    dialog.showErrorBox('Cannot read a file!', err.message || err);
   }
 
-  event.returnValue = { status, path: path ? path : filePath };
+  event.returnValue = null;
+});
+
+ipcMain.on('ds:write', (event, path: string = '', data: string = '') => {
+  try {
+    if (path.length === 0) {
+      path = dialog.showSaveDialogSync(mainWindow);
+    }
+
+    fs.writeFileSync(path, data, { encoding: 'utf8' });
+
+    event.returnValue = path;
+  } catch (err) {
+    dialog.showErrorBox('Cannot write to a file!', err.message || err);
+    event.returnValue = null;
+  }
 });
 
 ipcMain.on('ds:rename', (event, oldPath: string, newPath: string) => {
-  fs.renameSync(oldPath, newPath);
+  try {
+    fs.renameSync(oldPath, newPath);
+  } catch (err) {
+    dialog.showErrorBox('Cannot rename!', err.message || err);
+  }
+  event.returnValue = null;
 });
 
 ipcMain.on('ds:delete', (event, path: string, isFile: boolean) => {
-  if (isFile) {
-    fs.rmSync(path);
-  } else {
-    fs.rmdirSync(path);
+  try {
+    if (isFile) {
+      fs.rmSync(path);
+    } else {
+      fs.rmdirSync(path);
+    }
+  } catch (err) {
+    dialog.showErrorBox(
+      'Cannot remove ' + isFile ? 'file!' : 'folder!',
+      err.message || err
+    );
   }
+  event.returnValue = null;
 });
 
 ipcMain.on('ds:mkdir', (event, path: string) => {
-  fs.mkdirSync(path);
-});
-
-ipcMain.on('ds:workDir', (event) => {
-  let fileSelectionPromise = dialog.showOpenDialog({
-    properties: ['openFile', 'openDirectory', 'multiSelections'],
-  });
-
-  fileSelectionPromise.then(function (obj) {
-    event.sender.send('selectedfolders', obj.filePaths);
-
-    obj.filePaths
-      .map((filePath) => {
-        return fs
-          .readdirSync(filePath, { withFileTypes: true })
-
-          .filter((dirent) => !dirent.isDirectory())
-
-          .map((dirent) => filePath + '/' + dirent.name);
-      })
-      .reduce((filesacc, files) => {
-        filesacc = filesacc.concat(files);
-
-        return filesacc;
-      })
-      .every((absolutefilepath) => {
-        let stats: fs.Stats = fs.statSync(absolutefilepath);
-
-        event.sender.send('fileslist', path.basename(absolutefilepath), stats);
-
-        return true;
-      });
-  });
+  try {
+    fs.mkdirSync(path);
+  } catch (err) {
+    dialog.showErrorBox('Cannot create folder!', err.message || err);
+  }
+  event.returnValue = null;
 });
 
 ipcMain.on('ds:explore', (event, path: string) => {
-  const explored: ExplolerItem[] = [];
+  try {
+    const explored: ExplolerItem[] = [];
 
-  fs.readdirSync(path, {
-    encoding: 'utf8',
-    withFileTypes: true,
-  }).map((item) => {
-    explored.push({
-      ...item,
-      isDirectory: item.isDirectory(),
-      isFile: item.isFile(),
+    fs.readdirSync(path, {
+      encoding: 'utf8',
+      withFileTypes: true,
+    }).map((item) => {
+      explored.push({
+        ...item,
+        isDirectory: item.isDirectory(),
+        isFile: item.isFile(),
+      });
     });
-  });
 
-  event.returnValue = explored
-    .sort((a, b) => {
-      let na = a.name.toLowerCase();
-      let nb = b.name.toLowerCase();
+    event.returnValue = explored
+      .sort((a, b) => {
+        let na = a.name.toLowerCase();
+        let nb = b.name.toLowerCase();
 
-      if (na < nb) {
-        return 1;
-      }
+        if (na < nb) {
+          return 1;
+        }
 
-      if (na > nb) {
-        return -1;
-      }
+        if (na > nb) {
+          return -1;
+        }
 
-      return 0;
-    })
-    .sort((a, b) => (a === b ? 0 : a ? -1 : 1));
+        return 0;
+      })
+      .sort((a, b) => (a === b ? 0 : a ? -1 : 1));
+  } catch (err) {
+    dialog.showErrorBox('Cannot explore folder!', err.message || err);
+    event.returnValue = null;
+  }
 });
 
 ipcMain.on('ds:getSetting', async (event, key: string) => {

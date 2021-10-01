@@ -6,7 +6,7 @@ contextBridge.exposeInMainWorld('ds', {
   write(path: PathLike, data: string): string {
     return ipcRenderer.sendSync('ds:write', path, data);
   },
-  read(path: PathLike): string {
+  read(path: PathLike): string | null {
     return ipcRenderer.sendSync('ds:read', path);
   },
   delete(path: PathLike, isFile: boolean): void {

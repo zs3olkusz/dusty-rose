@@ -97,9 +97,12 @@ export class Editor {
       const files = e.dataTransfer.files;
       for (let index = 0; index < files.length; index++) {
         const element = files[index];
+        const fileContent = window.ds.read(element.path);
 
-        this.setContent(window.ds.read(element.path));
-        this.tabsManager.newTab(element.path);
+        if (fileContent !== null) {
+          this.setContent(fileContent);
+          this.tabsManager.newTab(element.path);
+        }
       }
 
       this.el.classList.remove('drag-over');
@@ -132,15 +135,15 @@ export class Editor {
   }
 
   public saveFile(): void {
-    const res = window.ds.write(
+    const path = window.ds.write(
       this.tabsManager.openedTab.path,
       htmlToText(this.el).join(
         getLineEndings() === LineEnding.CRLF ? '\r\n' : '\n'
       )
     );
 
-    if (res.status === 'Success!' && !this.tabsManager.openedTab.path) {
-      this.tabsManager.openedTab.setPath(res.path);
+    if (path.length > 0 && !this.tabsManager.openedTab.path) {
+      this.tabsManager.openedTab.setPath(path);
     }
   }
 
