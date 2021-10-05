@@ -74,15 +74,15 @@ const defaultSettings: ISetting[] = [
   },
   {
     name: 'theme.fileExplorerItemFolderIcon',
-    default: '🗀',
+    default: "'🗀'",
   },
   {
     name: 'theme.fileExplorerItemFolderOpenIcon',
-    default: '🗁',
+    default: "'🗁'",
   },
   {
     name: 'theme.fileExplorerItemFileIcon',
-    default: '🗎',
+    default: "'🗎'",
   },
   {
     name: 'theme.footerHeight',
