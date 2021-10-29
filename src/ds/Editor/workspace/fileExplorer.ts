@@ -164,7 +164,7 @@ export class FileExplorer {
   constructor(path: string) {
     if (!window.ds.explore(path)) return;
 
-    this.tree = new Item(path, false, true, true);
+    this.tree = new Item(path, false, true, true, true);
 
     this._init();
   }
@@ -296,32 +296,36 @@ export class FileExplorer {
         this._expandFolder(e, item);
       });
 
-      el.addEventListener('drop', (e: DragEvent) => {
-        e.preventDefault();
-        e.stopPropagation();
+      if (!item.isRoot) {
+        el.addEventListener('drop', (e: DragEvent) => {
+          e.preventDefault();
+          e.stopPropagation();
 
-        const path = e.dataTransfer.getData('text');
-        if (path) {
-          const newPath = `${item.path}/${getBaseName(path)}`;
+          const path = e.dataTransfer.getData('text');
+          if (path) {
+            const newPath = `${item.path}/${getBaseName(path)}`;
 
-          window.ds.rename(path, newPath);
+            window.ds.rename(path, newPath);
 
-          e.dataTransfer.clearData();
-        }
+            e.dataTransfer.clearData();
+          }
 
-        this._expandFolder(e, item);
-        this._init();
+          this._expandFolder(e, item);
+          this._init();
 
-        el.classList.remove('drag-over');
-      });
+          el.classList.remove('drag-over');
+        });
 
-      el.addEventListener('dragover', (e: DragEvent) => {
-        e.preventDefault();
-      });
+        el.addEventListener('dragover', (e: DragEvent) => {
+          e.preventDefault();
+        });
 
-      el.addEventListener('dragenter', () => el.classList.add('drag-over'));
+        el.addEventListener('dragenter', () => el.classList.add('drag-over'));
 
-      el.addEventListener('dragleave', () => el.classList.remove('drag-over'));
+        el.addEventListener('dragleave', () =>
+          el.classList.remove('drag-over')
+        );
+      }
 
       el.appendChild(span);
 
@@ -341,14 +345,16 @@ export class FileExplorer {
       el.textContent = name;
     }
 
-    el.draggable = true;
+    if (!item.isRoot) {
+      el.draggable = true;
 
-    el.addEventListener('dragstart', (e: DragEvent) => {
-      e.dataTransfer.setData(
-        'text/plain',
-        (e.target as HTMLElement).dataset.path
-      );
-    });
+      el.addEventListener('dragstart', (e: DragEvent) => {
+        e.dataTransfer.setData(
+          'text/plain',
+          (e.target as HTMLElement).dataset.path
+        );
+      });
+    }
 
     return el;
   }
