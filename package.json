@@ -1,7 +1,7 @@
 {
   "name": "dusty-rose",
   "productName": "Dusty Rose",
-  "version": "0.0.4",
+  "version": "0.1.0",
   "description": "Code Editor",
   "main": ".webpack/main",
   "scripts": {
@@ -85,7 +85,7 @@
     "fork-ts-checker-webpack-plugin": "^6.2.12",
     "node-loader": "^2.0.0",
     "prettier": "^2.3.2",
-    "sass": "^1.35.1",
+    "sass": "^1.43.4",
     "sass-loader": "^12.1.0",
     "style-loader": "^2.0.0",
     "ts-loader": "^9.2.3",
