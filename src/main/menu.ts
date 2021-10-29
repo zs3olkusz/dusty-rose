@@ -11,8 +11,8 @@ export class DSMenu {
       submenu: [
         {
           label: 'New File',
-          click: function () {
-            console.log('ctrl+n');
+          click: (_, browser) => {
+            browser.webContents.send('ds:newFile');
           },
           accelerator: 'CommandOrControl+N',
         },
@@ -21,12 +21,16 @@ export class DSMenu {
         },
         {
           label: 'Open File...',
-          click: function () {},
+          click: (_, browser) => {
+            browser.webContents.send('ds:openFile');
+          },
           accelerator: 'CommandOrControl+O',
         },
         {
           label: 'Open Folder...',
-          click: function () {},
+          click: (_, browser) => {
+            browser.webContents.send('ds:openFolder');
+          },
           accelerator: 'CommandOrControl+Alt+O',
         },
         {
@@ -44,17 +48,23 @@ export class DSMenu {
         },
         {
           label: 'Save',
-          click: function () {},
+          click: (_, browser) => {
+            browser.webContents.send('ds:save');
+          },
           accelerator: 'CommandOrControl+S',
         },
         {
           label: 'Save as...',
-          click: function () {},
+          click: (_, browser) => {
+            browser.webContents.send('ds:saveAs');
+          },
           accelerator: 'CommandOrControl+Shift+S',
         },
         {
           label: 'Save all',
-          click: function () {},
+          click: (_, browser) => {
+            browser.webContents.send('ds:saveAll');
+          },
           accelerator: 'CommandOrControl+Alt+S',
         },
         {

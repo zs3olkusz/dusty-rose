@@ -3,69 +3,59 @@
   <head>
     <meta charset="UTF-8" />
     <title>Dusty Rose</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
   </head>
   <body>
-    <aside>
-      <div class="menu-container">
-        <ul class="menu">
-          <!-- <li data-files><img src="" alt="Files" /></li> -->
-          <li data-files title="Explorer">&#128193;</li>
-          <li data-files title="Search">&#128270;</li>
-        </ul>
-        <div class="content">
-          <div class="file-struct" data-files>
-            <ul class="dir">
-              <li>
-                <span class="caret">dusty-rose</span>
-                <ul class="nested">
-                  <li>
-                    <span class="caret">src</span>
-                    <ul class="nested">
-                      <li>
-                        <span class="caret">settings</span>
-                        <ul class="nested">
-                          <li>index.ts</li>
-                        </ul>
-                      </li>
-                      <li>index.html</li>
-                      <li>index.ts</li>
-                    </ul>
-                  </li>
-                  <li>package.json</li>
-                  <li>README.md</li>
-                </ul>
-              </li>
-            </ul>
-          </div>
+    <div>
+      <aside>
+        <div class="content resizable">
+          <ul class="dir"></ul>
         </div>
+      </aside>
+
+      <div id="resizer"></div>
+
+      <main class="editor">
+        <nav class="editor__tabs">
+          <ul class="opened-tabs" id="tabs"></ul>
+        </nav>
+        <div
+          id="editor"
+          class="editor__area"
+          contenteditable="true"
+          spellcheck="false"
+        >
+          <div><br /></div>
+        </div>
+      </main>
+    </div>
+
+    <footer class="footer">
+      <div class="footer__item dummy"></div>
+      <div class="footer__item"><span id="cursorPos">Ln 24, Col 7</span></div>
+      <div class="footer__item">
+        <label for="spaces">Spaces: </label
+        ><select id="spaces">
+          <option value="  " selected>2</option>
+          <option value="     ">4</option>
+          <option value="       ">6</option>
+          <option value="         ">8</option>
+        </select>
       </div>
-    </aside>
-
-    <nav>
-      <ul>
-        <li>
-          <p>
-            <span class="file__type">&#128459;</span> index.html
-            <button class="file__close" title="Close file">⨯</button>
-          </p>
-        </li>
-      </ul>
-    </nav>
-
-    <main>
-      <div id="editor" class="editor" contenteditable="true" spellcheck="false">
-      </div>
-    </main>
-
-    <footer>
-      <div class="dummy"></div>
-      <ul>
-        <li>Ln 24, Col 7</li>
-        <li>Spaces: 2</li>
-        <li>UTF-8</li>
-        <li>CRLF</li>
-        <li>html</li>
-      </ul>
+      <div class="footer__item"><span id="mode">Text</span></div>
     </footer>
+
+    <div class="context-menu" id="context"></div>
+
+    <div id="dialog">
+      <form id="form">
+        <div id="label">...</div>
+        <div id="data-container"></div>
+        <div id="buttons">
+          <button id="cancel">Cancel</button>
+          <button type="submit" id="ok">OK</button>
+        </div>
+      </form>
+    </div>
   </body>
 </html>

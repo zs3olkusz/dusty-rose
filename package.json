@@ -1,7 +1,7 @@
 {
   "name": "dusty-rose",
   "productName": "Dusty Rose",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Code Editor",
   "main": ".webpack/main",
   "scripts": {
@@ -52,7 +52,10 @@
                 {
                   "html": "./src/index.html",
                   "js": "./src/renderer.ts",
-                  "name": "main_window"
+                  "name": "main_window",
+                  "preload": {
+                    "js": "./src/preload.ts"
+                  }
                 }
               ]
             }
@@ -62,17 +65,19 @@
     }
   },
   "devDependencies": {
-    "@electron-forge/cli": "^6.0.0-beta.57",
-    "@electron-forge/maker-deb": "^6.0.0-beta.57",
-    "@electron-forge/maker-rpm": "^6.0.0-beta.57",
-    "@electron-forge/maker-squirrel": "^6.0.0-beta.57",
-    "@electron-forge/maker-zip": "^6.0.0-beta.57",
-    "@electron-forge/plugin-webpack": "^6.0.0-beta.57",
+    "@electron-forge/cli": "^6.0.0-beta.60",
+    "@electron-forge/maker-deb": "^6.0.0-beta.60",
+    "@electron-forge/maker-rpm": "^6.0.0-beta.60",
+    "@electron-forge/maker-squirrel": "^6.0.0-beta.60",
+    "@electron-forge/maker-zip": "^6.0.0-beta.60",
+    "@electron-forge/plugin-webpack": "^6.0.0-beta.60",
     "@marshallofsound/webpack-asset-relocator-loader": "^0.5.0",
+    "@types/node": "^16.4.9",
     "@typescript-eslint/eslint-plugin": "^4.28.0",
     "@typescript-eslint/parser": "^4.28.0",
     "css-loader": "^5.2.6",
     "electron": "13.1.4",
+    "electron-settings": "^4.0.2",
     "eslint": "^7.29.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-import": "^2.23.4",
@@ -84,8 +89,7 @@
     "sass-loader": "^12.1.0",
     "style-loader": "^2.0.0",
     "ts-loader": "^9.2.3",
-    "typescript": "^4.3.4",
-    "xterm": "^4.13.0"
+    "typescript": "^4.3.4"
   },
   "dependencies": {
     "electron-squirrel-startup": "^1.0.0"

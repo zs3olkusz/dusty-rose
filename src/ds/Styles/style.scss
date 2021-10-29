@@ -1,0 +1,67 @@
+@use 'aside';
+@use 'contextMenu';
+@use 'dialog';
+@use 'editor';
+@use 'footer';
+@use 'scrollBar';
+@use 'syntax';
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+  font-family: var(--fontFamily);
+}
+
+html {
+  width: 100vw;
+  height: 100vh;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--background1);
+  overflow: hidden;
+
+  p,
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  li {
+    user-select: none;
+  }
+
+  div {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+  }
+}
+
+.drag-over {
+  background-color: var(--background2);
+}
+
+.over {
+  opacity: 0.5;
+}
+
+#resizer {
+  background-color: var(--background3);
+  cursor: ew-resize;
+  min-height: 100%;
+  max-width: 1px;
+
+  transition: background-color var(--transitionTime2) ease-in-out;
+
+  &:hover {
+    max-width: 3px;
+    background-color: var(--foreground1);
+  }
+}
