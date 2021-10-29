@@ -34,8 +34,10 @@ contextBridge.exposeInMainWorld('ds', {
       'ds:saveAll',
     ];
 
-    if (validChannels.includes(channel)) {
-      ipcRenderer.on(channel, (event, ...args) => func(...args));
+    if (!validChannels.includes(channel)) {
+      throw new Error(`\`${channel}\` is not valid channel.`);
     }
+
+    ipcRenderer.on(channel, (event, ...args) => func(...args));
   },
 });
