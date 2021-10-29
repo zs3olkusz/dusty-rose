@@ -20,7 +20,9 @@
 
     cursor: pointer;
 
-    transition: all var(--transitionTime1) linear;
+    transition-property: background-color, color;
+    transition-duration: var(--transitionTime1);
+    transition-timing-function: linear;
 
     &:hover {
       background-color: var(--background2);
