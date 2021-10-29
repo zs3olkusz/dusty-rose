@@ -125,6 +125,7 @@ class Item {
   path: string;
   isDirectory: boolean;
   isFile: boolean;
+  isExpanded: boolean;
   childrens: {
     [path: string]: Item;
   };
@@ -133,11 +134,13 @@ class Item {
     path: string,
     isFile = true,
     isDirectory = false,
+    isExpanded = false,
     readonly isRoot = false
   ) {
     this.path = path;
     this.isDirectory = isDirectory;
     this.isFile = isFile;
+    this.isExpanded = isExpanded;
 
     this.childrens = {};
 
@@ -252,6 +255,8 @@ export class FileExplorer {
 
     const result = window.ds.explore(item.path);
 
+    item.isExpanded = true;
+
     result.map(({ name, isDirectory, isFile }) => {
       item.childrens[name] = new Item(
         `${item.path}/${name}`,
@@ -275,7 +280,11 @@ export class FileExplorer {
     if (item.isDirectory) {
       const span = document.createElement('span');
       span.classList.add('caret');
-      item.isRoot && span.classList.add('caret-down');
+
+      if (item.isRoot || item.isExpanded) {
+        span.classList.add('caret-down');
+      }
+
       span.textContent = name;
 
       span.dataset.path = item.path;
@@ -318,7 +327,10 @@ export class FileExplorer {
 
       const ul = document.createElement('ul');
       ul.classList.add('nested');
-      item.isRoot && ul.classList.add('active');
+
+      if (item.isRoot || item.isExpanded) {
+        ul.classList.add('active');
+      }
 
       for (const name in item.childrens) {
         ul.appendChild(this._createElement(item.childrens[name]));
