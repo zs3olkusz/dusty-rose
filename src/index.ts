@@ -137,7 +137,9 @@ ipcMain.on('ds:explore', (event, path: string) => {
 
         return 0;
       })
-      .sort((a, b) => (a === b ? 0 : a ? -1 : 1));
+      .sort((a, b) =>
+        a.isDirectory === b.isDirectory ? 0 : a.isDirectory ? -1 : 1
+      );
   } catch (err) {
     dialog.showErrorBox('Cannot explore folder!', err.message || err);
     event.returnValue = null;
