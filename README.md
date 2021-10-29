@@ -1,6 +1,6 @@
 # Dusty Rose
 
-Project is simple code editor built in ElectronJs. It was created as a work together school class project during holiday.
+Project is simple code editor built using ElectronJs.
 
 ## Screenshots
 
