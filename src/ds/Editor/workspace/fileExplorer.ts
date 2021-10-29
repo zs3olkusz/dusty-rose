@@ -275,6 +275,8 @@ export class FileExplorer {
     el.dataset.isFile = item.isFile === true ? 'true' : 'false';
     el.dataset.isDirectory = item.isDirectory === true ? 'true' : 'false';
 
+    el.title = item.path;
+
     const name = getBaseName(item.path);
 
     if (item.isDirectory) {
