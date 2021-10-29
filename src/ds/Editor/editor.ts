@@ -132,6 +132,13 @@ export class Editor {
     this.tabsManager.newTab();
 
     this.el.focus();
+
+    window.ds.on('ds:newFile', () => this.tabsManager.newTab());
+    window.ds.on('ds:openFile', () => console.error('Not implemented'));
+    window.ds.on('ds:openFolder', () => console.error('Not implemented'));
+    window.ds.on('ds:save', () => this.saveFile());
+    window.ds.on('ds:saveAs', () => this.saveFile());
+    window.ds.on('ds:saveAll', () => console.error('Not implemented'));
   }
 
   public saveFile(): void {
@@ -142,7 +149,7 @@ export class Editor {
       )
     );
 
-    if (path.length > 0 && !this.tabsManager.openedTab.path) {
+    if (path && !this.tabsManager.openedTab.path) {
       this.tabsManager.openedTab.setPath(path);
     }
   }

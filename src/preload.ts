@@ -24,4 +24,18 @@ contextBridge.exposeInMainWorld('ds', {
   getSetting<T>(key: string): T {
     return ipcRenderer.sendSync('ds:getSetting', key);
   },
+  on(channel: string, func: (...args: any[]) => void): void {
+    const validChannels = [
+      'ds:newFile',
+      'ds:openFile',
+      'ds:openFolder',
+      'ds:save',
+      'ds:saveAs',
+      'ds:saveAll',
+    ];
+
+    if (validChannels.includes(channel)) {
+      ipcRenderer.on(channel, (event, ...args) => func(...args));
+    }
+  },
 });

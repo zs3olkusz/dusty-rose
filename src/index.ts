@@ -1,7 +1,7 @@
 import { app, BrowserWindow, dialog, ipcMain, Menu } from 'electron';
 import settings from 'electron-settings';
 import fs, { PathLike } from 'fs';
-import { DSMenu } from './ds/Menu';
+import { DSMenu } from './main/menu';
 import { initSettings } from './main/settings';
 
 declare global {
@@ -21,6 +21,7 @@ declare global {
       rename(path: PathLike, newName: string): void;
       explore(path: PathLike): ExplolerItem[];
       getSetting<T>(key: string): T;
+      on(channel: string, func: (...args: any[]) => void): void;
     };
   }
 }
