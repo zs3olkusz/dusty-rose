@@ -53,18 +53,6 @@ export class Editor {
         this.el.innerHTML = '<div><br></div>';
       }
 
-      if (
-        e.ctrlKey &&
-        e.key.toLowerCase() === 's' &&
-        this.tabsManager.openedTab
-      ) {
-        this.saveFile();
-        return;
-      } else if (e.ctrlKey && e.key.toLowerCase() === 'n') {
-        this.tabsManager.newTab();
-        return;
-      }
-
       if (ignoredKeys.indexOf(e.key) === -1) {
         const pos = this.tabsManager.openedTab.caret.getCaretPos();
 
