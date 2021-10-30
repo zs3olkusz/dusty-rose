@@ -51,12 +51,17 @@ export class Tab {
   public setPath(path: string): void {
     this.path = path;
 
-    this.fileName = this.path
-      ? getBaseName(convertWindowsPathToUnixPath(this.path))
-      : 'Untitled';
-    this.fileContent = this.path
-      ? escapeCharacters(window.ds.read(this.path))
-      : '';
+    if (this.path) {
+      this.fileName = getBaseName(convertWindowsPathToUnixPath(this.path));
+
+      const content = window.ds.read(this.path);
+      this.fileContent = content
+        ? escapeCharacters(window.ds.read(this.path))
+        : '';
+    } else {
+      this.fileName = 'Untitled';
+      this.fileContent = '';
+    }
 
     if (this.tab) {
       const tabContainer = document.getElementById('tabs');

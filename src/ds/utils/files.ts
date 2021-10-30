@@ -25,6 +25,8 @@ export function getFileExtension(fullPath: string): string {
 }
 
 export function checkLineEndings(text: string): null | LineEnding {
+  if (!text) return null;
+
   const testText = text.substr(0, 1000);
   const hasCRLF = /\r\n/.test(testText);
   const hasLF = /[^\r]\n/.test(testText);

@@ -3,10 +3,11 @@ import { LineEnding, checkLineEndings } from '../../utils/files';
 export function textToHtml(text: string): string {
   let html = '';
 
-  const codeLines =
-    checkLineEndings(text) === LineEnding.CRLF
+  const codeLines = text
+    ? checkLineEndings(text) === LineEnding.CRLF
       ? text.split('\r\n')
-      : text.split('\n');
+      : text.split('\n')
+    : [];
 
   codeLines.forEach((line: string) => {
     html += `<div>${line}<br></div>`;
