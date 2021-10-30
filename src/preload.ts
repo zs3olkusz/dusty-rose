@@ -32,6 +32,7 @@ contextBridge.exposeInMainWorld('ds', {
       'ds:save',
       'ds:saveAs',
       'ds:saveAll',
+      'ds:error',
     ];
 
     if (!validChannels.includes(channel)) {

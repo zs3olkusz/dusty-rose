@@ -52,7 +52,11 @@ ipcMain.on('ds:read', (event, path: string) => {
       throw Error(`File at ${path} does not exists.`);
     }
   } catch (err) {
-    dialog.showErrorBox('Cannot read a file!', err.message || err);
+    mainWindow.webContents.send(
+      'ds:error',
+      'Cannot read a file!',
+      err.message || err
+    );
   }
 
   event.returnValue = null;
@@ -68,7 +72,11 @@ ipcMain.on('ds:write', (event, path: string = '', data: string = '') => {
 
     event.returnValue = path;
   } catch (err) {
-    dialog.showErrorBox('Cannot write to a file!', err.message || err);
+    mainWindow.webContents.send(
+      'ds:error',
+      'Cannot write to a file!',
+      err.message || err
+    );
     event.returnValue = null;
   }
 });
@@ -77,7 +85,11 @@ ipcMain.on('ds:rename', (event, oldPath: string, newPath: string) => {
   try {
     fs.renameSync(oldPath, newPath);
   } catch (err) {
-    dialog.showErrorBox('Cannot rename!', err.message || err);
+    mainWindow.webContents.send(
+      'ds:error',
+      'Cannot rename!',
+      err.message || err
+    );
   }
   event.returnValue = null;
 });
@@ -90,7 +102,8 @@ ipcMain.on('ds:delete', (event, path: string, isFile: boolean) => {
       fs.rmdirSync(path);
     }
   } catch (err) {
-    dialog.showErrorBox(
+    mainWindow.webContents.send(
+      'ds:error',
       'Cannot remove ' + isFile ? 'file!' : 'folder!',
       err.message || err
     );
@@ -102,7 +115,11 @@ ipcMain.on('ds:mkdir', (event, path: string) => {
   try {
     fs.mkdirSync(path);
   } catch (err) {
-    dialog.showErrorBox('Cannot create folder!', err.message || err);
+    mainWindow.webContents.send(
+      'ds:error',
+      'Cannot create folder!',
+      err.message || err
+    );
   }
   event.returnValue = null;
 });
@@ -141,7 +158,11 @@ ipcMain.on('ds:explore', (event, path: string) => {
         a.isDirectory === b.isDirectory ? 0 : a.isDirectory ? -1 : 1
       );
   } catch (err) {
-    dialog.showErrorBox('Cannot explore folder!', err.message || err);
+    mainWindow.webContents.send(
+      'ds:error',
+      'Cannot explore folder!',
+      err.message || err
+    );
     event.returnValue = null;
   }
 });

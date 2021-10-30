@@ -49,7 +49,7 @@ const defaultSettings: ISetting[] = [
     default: '0.25s',
   },
   {
-    name: 'theme.transitionTime1',
+    name: 'theme.transitionTime2',
     default: '0.5s',
   },
   {

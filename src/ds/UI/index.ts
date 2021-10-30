@@ -1,6 +1,7 @@
 import { Editor } from '../Editor/editor';
 import { loadTheme } from '../Editor/theme';
 import { resizable } from './resizable';
+import { showSnackbar } from './snackbar';
 
 export function renderer(): void {
   loadTheme();
@@ -10,4 +11,8 @@ export function renderer(): void {
   const editor = new Editor(editorEl);
 
   resizable();
+
+  window.ds.on('ds:error', (title: string, description: string) =>
+    showSnackbar(title, description)
+  );
 }
