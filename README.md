@@ -1,6 +1,6 @@
 # Dusty Rose
 
-Project is simple code editor built using ElectronJs.
+Dusty Rose is a simple code editor which is built using ElectronJS.
 
 ## Screenshots
 
