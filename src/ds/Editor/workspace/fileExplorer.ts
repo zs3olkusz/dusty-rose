@@ -1,4 +1,4 @@
-import { getBaseName } from '../../utils/files';
+import { convertWindowsPathToUnixPath, getBaseName } from '../../utils/files';
 import { Dialog } from '../core/dialog';
 
 interface IContextMenuAction {
@@ -277,7 +277,7 @@ export class FileExplorer {
 
     el.title = item.path;
 
-    const name = getBaseName(item.path);
+    const name = getBaseName(convertWindowsPathToUnixPath(item.path));
 
     if (item.isDirectory) {
       const span = document.createElement('span');

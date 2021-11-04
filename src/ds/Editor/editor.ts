@@ -46,8 +46,7 @@ export class Editor {
 
   constructor(public readonly el: HTMLElement) {
     this.tabsManager = new TabsManager(this);
-
-    this.workspace = new WorkSpace('F:/Projects/learning-css');
+    this.workspace = new WorkSpace();
 
     this.el.addEventListener('keyup', (e: KeyboardEvent) => {
       // prevent deleting last line in editor
