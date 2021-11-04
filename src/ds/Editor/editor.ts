@@ -38,6 +38,8 @@ const ignoredKeys = [
   'Shift',
 ];
 
+const cursorPosEl = document.getElementById('cursorPos');
+
 export class Editor {
   tabsManager: TabsManager;
   workspace: WorkSpace;
@@ -68,6 +70,17 @@ export class Editor {
           getLineEndings() === LineEnding.CRLF ? '\r\n' : '\n'
         );
       }
+
+      this._updateCaretPos();
+    });
+
+    this.el.addEventListener('keydown', (e: KeyboardEvent) => {
+      this._updateCaretPos();
+    });
+
+    this.el.addEventListener('click', (e: MouseEvent) => {
+      e.stopPropagation();
+      this._updateCaretPos();
     });
 
     this.el.addEventListener('drop', (e: DragEvent) => {
@@ -127,6 +140,43 @@ export class Editor {
     window.ds.on('ds:save', () => this.saveFile());
     window.ds.on('ds:saveAs', () => this.saveFile());
     window.ds.on('ds:saveAll', () => console.error('Not implemented'));
+  }
+
+  // update caret position info
+  private _updateCaretPos(): void {
+    const { line, column } = this._getCaretPos();
+
+    cursorPosEl.innerHTML = `Ln ${line}, Col ${column}`;
+  }
+
+  // get caret position
+  private _getCaretPos(): { line: number; column: number } {
+    const node = window.getSelection().anchorNode;
+
+    const lines = this.el.childNodes;
+
+    let line = 0;
+    const column = window.getSelection().anchorOffset + 1;
+
+    for (let i = 0; i < lines.length; i++) {
+      const element = lines[i];
+
+      if (element.nodeName === 'DIV' || element.nodeName === 'BR') {
+        line++;
+      }
+
+      if (element === node) {
+        return {
+          line,
+          column,
+        };
+      }
+    }
+
+    return {
+      line,
+      column,
+    };
   }
 
   public saveFile(): void {
