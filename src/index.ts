@@ -20,6 +20,7 @@ declare global {
       mkdir(path: PathLike): void;
       rename(path: PathLike, newName: string): void;
       explore(path: PathLike): ExplolerItem[];
+      open(options: Electron.OpenDialogSyncOptions): string[];
       getSetting<T>(key: string): T;
       on(channel: string, func: (...args: any[]) => void): void;
     };
@@ -164,6 +165,22 @@ ipcMain.on('ds:explore', (event, path: string) => {
       err.message || err
     );
     event.returnValue = null;
+  }
+});
+
+ipcMain.on('ds:open', (event, options: Electron.OpenDialogSyncOptions) => {
+  try {
+    const paths = dialog.showOpenDialogSync(mainWindow, options);
+
+    event.returnValue = paths;
+  } catch (err) {
+    mainWindow.webContents.send(
+      'ds:error',
+      `Cannot open ${
+        options.properties.includes('openDirectory') ? 'folder' : 'file'
+      }${options.properties.includes('multiSelections') && 's'}`,
+      err.message || err
+    );
   }
 });
 

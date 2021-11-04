@@ -21,6 +21,9 @@ contextBridge.exposeInMainWorld('ds', {
   explore(path: PathLike): ExplolerItem[] {
     return ipcRenderer.sendSync('ds:explore', path);
   },
+  open(options: Electron.OpenDialogSyncOptions): string[] {
+    return ipcRenderer.sendSync('ds:open', options);
+  },
   getSetting<T>(key: string): T {
     return ipcRenderer.sendSync('ds:getSetting', key);
   },

@@ -2,6 +2,7 @@ import { TabsManager } from './tabs/manager';
 import { getLineEndings, LineEnding } from '../utils/files';
 import { textToHtml, htmlToText } from './core/text';
 import { WorkSpace } from './workspace';
+import { Tab } from './tabs/tab';
 
 const ignoredKeys = [
   'Alt',
@@ -71,10 +72,12 @@ export class Editor {
       }
 
       this._updateCaretPos();
+      this._updateTabContent(this.tabsManager.openedTab);
     });
 
     this.el.addEventListener('keydown', (e: KeyboardEvent) => {
       this._updateCaretPos();
+      this._updateTabContent(this.tabsManager.openedTab);
     });
 
     this.el.addEventListener('click', (e: MouseEvent) => {
@@ -134,11 +137,35 @@ export class Editor {
     this.el.focus();
 
     window.ds.on('ds:newFile', () => this.tabsManager.newTab());
-    window.ds.on('ds:openFile', () => console.error('Not implemented'));
-    window.ds.on('ds:openFolder', () => console.error('Not implemented'));
+    window.ds.on('ds:openFile', () => {
+      window.ds
+        .open({
+          properties: ['openFile', 'multiSelections'],
+        })
+        .map((path) => {
+          this.tabsManager.newTab(path);
+        });
+    });
+    window.ds.on('ds:openFolder', () => {
+      window.ds
+        .open({
+          properties: ['openDirectory', 'multiSelections', 'createDirectory'],
+        })
+        .map((path) => {
+          this.workspace.open(path);
+        });
+    });
     window.ds.on('ds:save', () => this.saveFile());
     window.ds.on('ds:saveAs', () => this.saveFile());
-    window.ds.on('ds:saveAll', () => console.error('Not implemented'));
+    window.ds.on('ds:saveAll', () => {
+      const tabs = this.tabsManager.tabs;
+
+      Object.keys(tabs).map((path) => {
+        if (path) {
+          this.saveFile(tabs[path]);
+        }
+      });
+    });
   }
 
   // update caret position info
@@ -178,17 +205,28 @@ export class Editor {
     };
   }
 
-  public saveFile(): void {
-    const path = window.ds.write(
-      this.tabsManager.openedTab.path,
-      htmlToText(this.el).join(
-        getLineEndings() === LineEnding.CRLF ? '\r\n' : '\n'
-      )
-    );
+  public saveFile(tab?: Tab): void {
+    if (tab) {
+      window.ds.write(tab.path, tab.fileContent);
+    } else {
+      const path = window.ds.write(
+        this.tabsManager.openedTab.path,
+        htmlToText(this.el).join(
+          getLineEndings() === LineEnding.CRLF ? '\r\n' : '\n'
+        )
+      );
 
-    if (path && !this.tabsManager.openedTab.path) {
-      this.tabsManager.openedTab.setPath(path);
+      if (path && !this.tabsManager.openedTab.path) {
+        this.tabsManager.openedTab.setPath(path);
+      }
     }
+  }
+
+  // update tab content
+  private _updateTabContent(tab: Tab): void {
+    tab.fileContent = htmlToText(this.el).join(
+      getLineEndings() === LineEnding.CRLF ? '\r\n' : '\n'
+    );
   }
 
   public setContent(content: string): void {
