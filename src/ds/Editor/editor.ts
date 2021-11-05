@@ -191,7 +191,9 @@ export class Editor {
         line++;
       }
 
-      if (element === node) {
+      // turning off typescript check because of `childNodes` type
+      // @ts-ignore
+      if (element === node || [...element.childNodes].indexOf(node) !== -1) {
         return {
           line,
           column,
