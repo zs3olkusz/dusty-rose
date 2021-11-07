@@ -30,6 +30,7 @@ export class Highlighter {
 
   constructor(public readonly el: HTMLElement, public mode: any) {}
 
+  /** Sort latter matches so its top priority */
   private _sortArrayByObjectsIndex(array: Match[]): void {
     array.sort((a, b) => {
       if (a.index === b.index) {
@@ -39,6 +40,7 @@ export class Highlighter {
     });
   }
 
+  /** Remove duplicates from array */
   private _removeDuplicateObjectsFromArray(
     array: Match[],
     shouldRemove: (a: Match, b: Match) => number
@@ -58,6 +60,7 @@ export class Highlighter {
     }
   }
 
+  /** Wrap text in highlighting span */
   private _wrapTextWithSpan(
     text?: string,
     classes?: string,
@@ -81,6 +84,7 @@ export class Highlighter {
     return `${beginning}<span class="${classes}">${middle}</span>${ending}`;
   }
 
+  /** Get regex match array */
   private _getMatchesArrayFromRegex(regexObject: any, str: string): Match[] {
     const matchesArray: Match[] = [];
     let precedenceCounter = 1;
@@ -145,6 +149,7 @@ export class Highlighter {
     return matchesArray;
   }
 
+  /** Find regex matches */
   private _findRegexMatches(
     str: string,
     regexString: string,
@@ -180,6 +185,7 @@ export class Highlighter {
     return matchesArray;
   }
 
+  /** Default duplicate function */
   private _defaultDuplicateFunction(a: Match, b: Match): number {
     if (a.index == b.index) {
       if (a.precedence == b.precedence) {
@@ -213,6 +219,7 @@ export class Highlighter {
     return 0;
   }
 
+  /** Insert syntax highlighting */
   private _insertSyntaxHighlighting(
     regexObject: any,
     str: string,
@@ -242,6 +249,7 @@ export class Highlighter {
     return this._assembleNewStringFromMatchArray(str, matchesArray);
   }
 
+  /** Highlight editor code content */
   public highlight(): void {
     const textContent = htmlToText(this.el as HTMLElement);
     const result = this._insertSyntaxHighlighting(
@@ -254,12 +262,14 @@ export class Highlighter {
     }
   }
 
+  /** Change highlight mode (language) */
   public changeMode(mode: any): void {
     this.mode = mode;
 
     this.highlight();
   }
 
+  /** Create string from matches */
   private _assembleNewStringFromMatchArray(
     str: string,
     array: Match[]

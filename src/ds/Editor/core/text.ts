@@ -1,5 +1,6 @@
 import { LineEnding, checkLineEndings } from '../../utils/files';
 
+/** Convert text to html */
 export function textToHtml(text: string): string {
   let html = '';
 
@@ -18,6 +19,7 @@ export function textToHtml(text: string): string {
   return html;
 }
 
+/** Convert html to text */
 export function htmlToText(element: HTMLElement): string[] {
   const content: string[] = [];
 
@@ -30,6 +32,7 @@ export function htmlToText(element: HTMLElement): string[] {
   return content;
 }
 
+/** Escape `<` and `>` from the text */
 export function escapeCharacters(text: string): string {
   return text.replaceAll('<', '&lt;').replaceAll('>', '&gt;');
 }

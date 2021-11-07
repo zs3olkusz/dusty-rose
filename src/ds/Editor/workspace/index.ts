@@ -14,12 +14,12 @@ export class WorkSpace {
       e.stopPropagation();
       e.preventDefault();
 
+      // get the file from the event data and loop through them
       const items = e.dataTransfer.items;
-
       for (let i = 0; i < items.length; i++) {
-        // webkitGetAsEntry is where the magic happens
         const item = items[i].webkitGetAsEntry();
 
+        // if the item is a directory then we open it
         if (item && item.isDirectory) {
           // open folder
           this.open(items[i].getAsFile().path);
@@ -42,7 +42,7 @@ export class WorkSpace {
     );
   }
 
-  // open path
+  /** Open path */
   public open(path: string) {
     this.paths[path] = new FileExplorer(path);
   }

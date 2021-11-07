@@ -13,15 +13,25 @@ declare global {
 
   interface Window {
     ds: {
+      /** Get the platform of the current system */
       platform: string;
+      /** Write data to the file with the given path and return the path of the file */
       write(path: PathLike, data: string): string;
+      /** Read data from the file with the given path and return it */
       read(path: PathLike): string | null;
+      /** Delete the file with the given path */
       delete(path: PathLike, isFile: boolean): void;
+      /** Create a directory with the given path */
       mkdir(path: PathLike): void;
+      /** Rename the file or directory with the given path */
       rename(path: PathLike, newName: string): void;
+      /** Show content of the directory with the given path */
       explore(path: PathLike): ExplolerItem[];
+      /** Open dialog with the given options and return result of the dialog */
       open(options: Electron.OpenDialogSyncOptions): string[];
+      /** Get setting value with the given key */
       getSetting<T>(key: string): T;
+      /** Event listener for the given event name from the main process */
       on(channel: string, func: (...args: any[]) => void): void;
     };
   }
@@ -35,15 +45,20 @@ declare const MAIN_WINDOW_PRELOAD_WEBPACK_ENTRY: string;
 
 let mainWindow: BrowserWindow = null;
 
+// initialize settings
 initSettings();
 
+// event listener for `ds:read`
 ipcMain.on('ds:read', (event, path: string) => {
   try {
+    // check if file exists
     const exists = fs.existsSync(path);
 
     if (exists) {
+      // read file
       const fileContent = fs.readFileSync(path, 'utf8');
 
+      // check file size
       if (fileContent.length < 100_000) {
         event.returnValue = fileContent;
       } else {
@@ -58,17 +73,19 @@ ipcMain.on('ds:read', (event, path: string) => {
       'Cannot read a file!',
       err.message || err
     );
+    event.returnValue = null;
   }
-
-  event.returnValue = null;
 });
 
+// event listener for `ds:write`
 ipcMain.on('ds:write', (event, path: string = '', data: string = '') => {
   try {
+    // check the given path
     if (path.length === 0) {
       path = dialog.showSaveDialogSync(mainWindow);
     }
 
+    // write to file
     fs.writeFileSync(path, data, { encoding: 'utf8' });
 
     event.returnValue = path;
@@ -82,8 +99,10 @@ ipcMain.on('ds:write', (event, path: string = '', data: string = '') => {
   }
 });
 
+// event listener for `ds:rename`
 ipcMain.on('ds:rename', (event, oldPath: string, newPath: string) => {
   try {
+    // rename file or directory
     fs.renameSync(oldPath, newPath);
   } catch (err) {
     mainWindow.webContents.send(
@@ -92,11 +111,11 @@ ipcMain.on('ds:rename', (event, oldPath: string, newPath: string) => {
       err.message || err
     );
   }
-  event.returnValue = null;
 });
 
 ipcMain.on('ds:delete', (event, path: string, isFile: boolean) => {
   try {
+    // if is file delete file else delete directory
     if (isFile) {
       fs.rmSync(path);
     } else {
@@ -109,11 +128,12 @@ ipcMain.on('ds:delete', (event, path: string, isFile: boolean) => {
       err.message || err
     );
   }
-  event.returnValue = null;
 });
 
+// event listener for `ds:mkdir`
 ipcMain.on('ds:mkdir', (event, path: string) => {
   try {
+    // create directory
     fs.mkdirSync(path);
   } catch (err) {
     mainWindow.webContents.send(
@@ -122,13 +142,15 @@ ipcMain.on('ds:mkdir', (event, path: string) => {
       err.message || err
     );
   }
-  event.returnValue = null;
 });
 
+// event listener for `ds:explore`
 ipcMain.on('ds:explore', (event, path: string) => {
   try {
+    // folder content
     const explored: ExplolerItem[] = [];
 
+    // explore folder
     fs.readdirSync(path, {
       encoding: 'utf8',
       withFileTypes: true,
@@ -140,6 +162,7 @@ ipcMain.on('ds:explore', (event, path: string) => {
       });
     });
 
+    // return explored folder and sort content by name and type
     event.returnValue = explored
       .sort((a, b) => {
         let na = a.name.toLowerCase();
@@ -168,8 +191,11 @@ ipcMain.on('ds:explore', (event, path: string) => {
   }
 });
 
+// event listener for `ds:open`
+// it handles opening of dialogs
 ipcMain.on('ds:open', (event, options: Electron.OpenDialogSyncOptions) => {
   try {
+    // get file or folder path from dialog
     const paths = dialog.showOpenDialogSync(mainWindow, options);
 
     event.returnValue = paths;
@@ -181,9 +207,12 @@ ipcMain.on('ds:open', (event, options: Electron.OpenDialogSyncOptions) => {
       }${options.properties.includes('multiSelections') && 's'}`,
       err.message || err
     );
+    event.returnValue = [];
   }
 });
 
+// event listener for `ds:getSetting`
+// it handles getting of settings
 ipcMain.on('ds:getSetting', async (event, key: string) => {
   event.returnValue = settings.getSync(key) || null;
 });
@@ -204,6 +233,7 @@ const createWindow = (): void => {
     minWidth: 800,
     fullscreen: (settings.getSync('fullscreen') as boolean) || false,
 
+    // the place where the window will be shown
     x: settings.getSync('x') as number,
     y: settings.getSync('y') as number,
 

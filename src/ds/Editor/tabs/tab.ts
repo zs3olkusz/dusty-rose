@@ -48,12 +48,15 @@ export class Tab {
     });
   }
 
+  /** Set tab path */
   public setPath(path: string): void {
     this.path = path;
 
     if (this.path) {
+      // set tab name
       this.fileName = getBaseName(convertWindowsPathToUnixPath(this.path));
 
+      // set tab content
       const content = window.ds.read(this.path);
       this.fileContent = content
         ? escapeCharacters(window.ds.read(this.path))
@@ -68,12 +71,14 @@ export class Tab {
 
       tabContainer.removeChild(this.tab);
 
+      // create new tab element in DOM
       this.tab = this._createTab();
 
       tabContainer.appendChild(this.tab);
     }
   }
 
+  /** Open tab */
   public openTab(): void {
     this.editor.setContent(this.fileContent);
     this._toggleOffOtherTabs();
@@ -82,6 +87,7 @@ export class Tab {
     this.editor.tabsManager.openedTab = this;
   }
 
+  /** Create tab element in DOM */
   private _createTab(): HTMLElement {
     const tab = document.createElement('li');
     tab.classList.add('tab');
@@ -119,6 +125,7 @@ export class Tab {
     return tab;
   }
 
+  /** Remove tab */
   public removeTab(e: MouseEvent): void {
     // @ts-ignore
     e.target.parentNode.parentElement.removeChild(e.target.parentNode);
@@ -126,6 +133,7 @@ export class Tab {
     this.editor.tabsManager.tabs[this.path] = null;
   }
 
+  /** Toggle off all tabs */
   private _toggleOffOtherTabs(): void {
     const tabs = document.getElementById('tabs').children;
 

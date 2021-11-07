@@ -6,6 +6,7 @@ interface IContextMenuAction {
   handler: (e: MouseEvent) => void;
 }
 
+/** Gets context menu actions for a given element based on its type (file or folder) */
 function getContextMenuOptions({
   isFile,
   isDirectory,
@@ -43,6 +44,7 @@ function getContextMenuOptions({
             label: "File's name:",
             callback: (fileName: string) => {
               if (fileName) {
+                // create file via write to file, but we use pass empty string
                 window.ds.write(`${path}/${fileName}`, '');
               }
             },
@@ -121,6 +123,7 @@ function getContextMenuOptions({
   ];
 }
 
+/** Item class for file explorer items */
 class Item {
   path: string;
   isDirectory: boolean;
@@ -147,6 +150,7 @@ class Item {
     this.isRoot && this._explore(this.path);
   }
 
+  /** Explore the directory and create childrens */
   private _explore(path: string): void {
     if (!this.isFile && this.isDirectory) {
       const result = window.ds.explore(path);
@@ -169,11 +173,14 @@ export class FileExplorer {
     this._init();
   }
 
+  /** Initialize explorer */
   _init(): void {
+    // render file explorer tree in DOM
     this._renderFileExplorer();
 
     const togglers = document.getElementsByClassName('caret');
 
+    // add event listener to toggle folder's open/close
     for (let i = 0; i < togglers.length; i++) {
       togglers[i].addEventListener('click', function () {
         this.parentElement.querySelector('.nested').classList.toggle('active');
@@ -185,9 +192,11 @@ export class FileExplorer {
       });
     }
 
+    // initialize context menu
     this._initContextMenu();
   }
 
+  /** Create a new tree for file explorer */
   private _renderFileExplorer(): void {
     const dir = document.querySelector('.dir');
 
@@ -195,6 +204,7 @@ export class FileExplorer {
     dir.appendChild(this._createElement(this.tree));
   }
 
+  /** Create a context menu for file explorer in DOM */
   private _renderContextMenu(
     actions: IContextMenuAction[],
     context: HTMLElement
@@ -213,6 +223,7 @@ export class FileExplorer {
     });
   }
 
+  /** Initializes a context menu for file explorer */
   private _initContextMenu(): void {
     const context = document.getElementById('context');
     const explorerItems = document.querySelectorAll('.dir li');
@@ -227,6 +238,7 @@ export class FileExplorer {
         const isDirectory =
           (item as HTMLElement).dataset.isDirectory === 'true';
 
+        // renders context menu with actions corresponding to item's type
         this._renderContextMenu(
           getContextMenuOptions({ isFile, isDirectory, path }),
           context
@@ -246,6 +258,7 @@ export class FileExplorer {
     });
   }
 
+  /** Expands folder in file tree */
   private _expandFolder(e: MouseEvent, item: Item): void {
     if (
       Object.keys(item.childrens).length > 0 ||
@@ -268,6 +281,7 @@ export class FileExplorer {
     this._init();
   }
 
+  /** Creates a new element for file explorer */
   private _createElement(item: Item): HTMLElement {
     const el = document.createElement('li');
 
@@ -277,6 +291,7 @@ export class FileExplorer {
 
     el.title = item.path;
 
+    // get base name of item's path
     const name = getBaseName(convertWindowsPathToUnixPath(item.path));
 
     if (item.isDirectory) {
@@ -347,6 +362,7 @@ export class FileExplorer {
       el.textContent = name;
     }
 
+    // add drag support for files and folders
     if (!item.isRoot) {
       el.draggable = true;
 

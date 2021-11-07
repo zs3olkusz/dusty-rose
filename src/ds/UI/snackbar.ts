@@ -1,8 +1,9 @@
 const snackbar = document.getElementById('snackbar');
 
-// close snackbar by removing class
+/** Close snackbar by removing class */
 const close = () => snackbar.classList.remove('show');
 
+/** Show snackbar with given title and message */
 export function showSnackbar(title: string, description: string): void {
   snackbar.querySelector('#title').textContent = title;
   snackbar.querySelector('#description').textContent = description;
@@ -15,5 +16,5 @@ export function showSnackbar(title: string, description: string): void {
   setTimeout(() => {
     close();
     snackbar.removeEventListener('click', close);
-  }, 3000);
+  }, 4000);
 }

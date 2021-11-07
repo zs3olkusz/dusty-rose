@@ -63,6 +63,7 @@ export class Dialog {
     dataElement.focus();
   }
 
+  /** Create dialog's input in DOM */
   private _createInput(): HTMLInputElement {
     const dataElement = document.createElement('input');
     dataElement.setAttribute('type', 'text');
@@ -105,6 +106,7 @@ export class Dialog {
     return dataElement;
   }
 
+  /** Create dialog's select input in DOM */
   private _createSelect(): HTMLSelectElement {
     const dataElement = document.createElement('select');
     let optionElement;
@@ -129,14 +131,17 @@ export class Dialog {
     return dataElement;
   }
 
+  /** Open dialog */
   private _open(): void {
     dialogEl.classList.add('open');
   }
 
+  /** Close dialog */
   private _close(): void {
     dialogEl.classList.remove('open');
   }
 
+  /** Submit dialog form and close it */
   private _submitForm(): void {
     this._setValue();
     this._close();
@@ -144,6 +149,7 @@ export class Dialog {
     this._options.callback(this._options.value);
   }
 
+  /** Set input value */
   private _setValue(): void {
     const dataEl = document.getElementById('data');
 
@@ -152,6 +158,7 @@ export class Dialog {
     ).value;
   }
 
+  /** Cancel dialog */
   private _cancel(): void {
     this._close();
     this._options.value = null;

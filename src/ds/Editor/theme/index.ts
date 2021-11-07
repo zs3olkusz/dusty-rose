@@ -33,6 +33,7 @@ interface ITheme {
   [name: string]: string;
 }
 
+/** Loads theme from the settings */
 export function loadTheme(): void {
   const root = document.querySelector(':root') as HTMLElement;
   const settings = window.ds.getSetting<ITheme>('theme');

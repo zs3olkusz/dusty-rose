@@ -3,6 +3,7 @@ export const enum LineEnding {
   LF,
 }
 
+/** Gets the file name from a path */
 export function getBaseName(fullPath: string): string {
   const lastSlash = fullPath.lastIndexOf('/');
 
@@ -15,6 +16,7 @@ export function getBaseName(fullPath: string): string {
   return fullPath.slice(lastSlash + 1);
 }
 
+/** Gets the file extension from a path */
 export function getFileExtension(fullPath: string): string {
   const baseName = getBaseName(fullPath);
   const idx = baseName.lastIndexOf('.');
@@ -24,6 +26,7 @@ export function getFileExtension(fullPath: string): string {
   return baseName.substr(idx + 1);
 }
 
+/** Checks file's line endings */
 export function checkLineEndings(text: string): null | LineEnding {
   if (!text) return null;
 
@@ -37,10 +40,12 @@ export function checkLineEndings(text: string): null | LineEnding {
   return hasCRLF ? LineEnding.CRLF : LineEnding.LF;
 }
 
+/** Gets file's line endings base on the platform */
 export function getLineEndings(): LineEnding {
   return window.ds.platform === 'win32' ? LineEnding.CRLF : LineEnding.LF;
 }
 
+/** Converts line endings to the windowses line endings */
 export function convertWindowsPathToUnixPath(path: string): string {
   if (window.ds.platform === 'win32') {
     path = path.replace(/\\/g, '/');

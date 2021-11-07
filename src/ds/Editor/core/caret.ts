@@ -21,10 +21,12 @@ export class Caret {
     });
   }
 
+  /** Set tab width */
   public setTabWidth(value: string): void {
     this.tab = value;
   }
 
+  /** Get caret current position */
   public getCaretPos(): number {
     const range = window.getSelection().getRangeAt(0);
     const prefix = range.cloneRange();
@@ -35,6 +37,7 @@ export class Caret {
     return prefix.toString().length;
   }
 
+  /** Set caret position */
   public setCaretPos(pos: number, parent: ChildNode = this._editor): number {
     parent.childNodes.forEach((node) => {
       if (node.nodeType === Node.TEXT_NODE) {

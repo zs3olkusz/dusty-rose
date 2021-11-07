@@ -1,5 +1,6 @@
 import settings from 'electron-settings';
 
+/** Create a setting with a default value */
 function createNonExistingSetting(
   settingName: string,
   defaultValue: string
@@ -14,6 +15,7 @@ interface ISetting {
   default: string;
 }
 
+// list of default settings
 const defaultSettings: ISetting[] = [
   {
     name: 'theme.background1',
@@ -142,6 +144,7 @@ const defaultSettings: ISetting[] = [
   },
 ];
 
+/** Initializes settings and creates default ones */
 export function initSettings(): void {
   settings.configure({
     prettify: true,
