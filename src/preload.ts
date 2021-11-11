@@ -1,32 +1,32 @@
 import { ipcRenderer, contextBridge } from 'electron';
-import { PathLike } from 'fs';
+import type { Dusty } from './types';
 
 // context bridge is used to communicate between the renderer and main process
 contextBridge.exposeInMainWorld('ds', {
   // get the platform of the current system
   platform: process.platform,
   // write data to the file with the given path and return the path of the file
-  write(path: PathLike, data: string): string {
+  write(path: string, data: string): string {
     return ipcRenderer.sendSync('ds:write', path, data);
   },
   // read data from the file with the given path and return it
-  read(path: PathLike): string | null {
+  read(path: string): string | null {
     return ipcRenderer.sendSync('ds:read', path);
   },
   // delete the file with the given path
-  delete(path: PathLike, isFile: boolean): void {
+  delete(path: string, isFile: boolean): void {
     ipcRenderer.sendSync('ds:delete', path, isFile);
   },
   // create a directory with the given path
-  mkdir(path: PathLike): void {
+  mkdir(path: string): void {
     ipcRenderer.sendSync('ds:mkdir', path);
   },
   // rename the file or directory with the given path
-  rename(path: PathLike, newName: string): void {
+  rename(path: string, newName: string): void {
     ipcRenderer.sendSync('ds:rename', path, newName);
   },
   // show content of the directory with the given path
-  explore(path: PathLike): ExplolerItem[] {
+  explore(path: string): Dusty.ExplorerItem[] {
     return ipcRenderer.sendSync('ds:explore', path);
   },
   // open dialog with the given options and return result of the dialog
