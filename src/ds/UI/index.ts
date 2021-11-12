@@ -1,3 +1,4 @@
+import { initState } from '../Editor/core/state';
 import { Editor } from '../Editor/editor';
 import { loadTheme } from '../Editor/theme';
 import { resizable } from './resizable';
@@ -7,6 +8,9 @@ import { showSnackbar } from './snackbar';
 export function renderer(): void {
   // load the theme
   loadTheme();
+
+  // initialize the state
+  initState();
 
   // create the editor
   const editorEl = document.getElementById('editor');
