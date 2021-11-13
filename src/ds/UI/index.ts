@@ -13,9 +13,7 @@ export function renderer(): void {
   initState();
 
   // create the editor
-  const editorEl = document.getElementById('editor');
-
-  const editor = new Editor(editorEl);
+  new Editor(document.getElementById('editor'));
 
   // add the resizable option for the aside
   resizable();

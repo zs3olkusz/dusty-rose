@@ -43,7 +43,7 @@ export class WorkSpace {
   }
 
   /** Open path */
-  public open(path: string) {
+  public open(path: string): void {
     this.paths[path] = new FileExplorer(path);
   }
 }

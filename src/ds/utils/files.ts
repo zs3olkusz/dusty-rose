@@ -16,6 +16,16 @@ export function getBaseName(fullPath: string): string {
   return fullPath.slice(lastSlash + 1);
 }
 
+/** Gets the base path from the path */
+export function getBasePath(fullPath: string): string {
+  const lastSlash = fullPath.lastIndexOf('/');
+
+  if (lastSlash === fullPath.length - 1) {
+    return fullPath.slice(0, fullPath.lastIndexOf('/', fullPath.length - 2));
+  }
+  return fullPath.slice(0, lastSlash);
+}
+
 /** Gets the file extension from a path */
 export function getFileExtension(fullPath: string): string {
   const baseName = getBaseName(fullPath);
