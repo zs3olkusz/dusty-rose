@@ -1,29 +1,13 @@
+import { Dusty } from '../../../types';
+
 const dialogEl = document.getElementById('dialog');
 const formEl = document.getElementById('form');
 const labelEl = document.getElementById('label');
 const cancelBtn = document.getElementById('cancel');
 const okBtn = document.getElementById('ok');
 
-interface IDialogOptions {
-  label: string;
-  callback: (value: string) => void;
-  placeholder?: string;
-  buttonLabels?: {
-    cancel?: string;
-    ok?: string;
-  };
-
-  type: 'input' | 'select';
-  inputAttrs?: {
-    [attr: string]: string;
-  };
-  selectMultiple?: boolean;
-  selectOptions?: string[];
-  value?: string;
-}
-
 export class Dialog {
-  constructor(private _options: IDialogOptions) {
+  constructor(private _options: Dusty.DialogOptions) {
     labelEl.textContent = this._options.label;
 
     if (this._options?.buttonLabels?.ok) {

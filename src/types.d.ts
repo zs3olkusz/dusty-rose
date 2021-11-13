@@ -1,6 +1,29 @@
 // Type definitions for Dusty Rose - v0.1.0
 
 export declare namespace Dusty {
+  interface DialogOptions {
+    label: string;
+    callback: (value: string) => void;
+    placeholder?: string;
+    buttonLabels?: {
+      cancel?: string;
+      ok?: string;
+    };
+
+    type: 'input' | 'select';
+    inputAttrs?: {
+      [attr: string]: string;
+    };
+    selectMultiple?: boolean;
+    selectOptions?: string[];
+    value?: string;
+  }
+
+  interface ContextMenuAction {
+    name: string;
+    handler: (e: MouseEvent) => void;
+  }
+
   interface TabState {
     path: string;
     fileName: string;
@@ -17,13 +40,17 @@ export declare namespace Dusty {
     path: string;
     isDirectory: boolean;
     isFile: boolean;
+    basePath: string;
     isExpanded: boolean;
     isRoot: boolean;
-    children: { [path: string]: FileExplorerItemState };
+    parent: string;
+    children: string[];
   }
 
   interface FileExplorerState {
-    tree: FileExplorerItemState;
+    tree: {
+      [path: string]: FileExplorerItemState;
+    };
   }
 
   interface EditorState {
@@ -61,6 +88,41 @@ export declare namespace Dusty {
     name: string;
     isDirectory: boolean;
     isFile: boolean;
+  }
+
+  interface Theme {
+    background1: string;
+    background1HEX: string;
+    background2: string;
+    background3: string;
+    foreground1: string;
+    foreground2: string;
+    fontFamily: string;
+    transitionTime1: string;
+    transitionTime2: string;
+    scrollBarSize: string;
+    asideWidth: string;
+    asideMinWidth: string;
+    fileExplorerItemDepthSize: string;
+    fileExplorerItemIconSize: string;
+    fileExplorerItemFolderIcon: string;
+    fileExplorerItemFolderOpenIcon: string;
+    fileExplorerItemFileIcon: string;
+    footerHeight: string;
+    footerFontSize: string;
+    footerItemPaddingHor: string;
+    mainFontSize: string;
+    navHeight: string;
+    navFontSize: string;
+    editorFontSize: string;
+    editorLineCounterWidth: string;
+    syntaxColor1: string;
+    syntaxColor2: string;
+    syntaxColor3: string;
+    syntaxColor4: string;
+    syntaxColor5: string;
+    syntaxColor6: string;
+    [name: string]: string;
   }
 }
 
