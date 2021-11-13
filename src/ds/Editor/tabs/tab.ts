@@ -70,7 +70,9 @@ export class Tab {
     listen(
       'ds:tab-changed',
       (editorId: string, data: Partial<Dusty.TabState>) => {
-        if (editorId !== this.editorId || data.path !== this.path) return;
+        if (editorId !== this.editorId || data.path !== this.path) {
+          return;
+        }
 
         this.setPath(data.path);
         data.fileContent && (this.fileContent = data.fileContent);
@@ -80,7 +82,9 @@ export class Tab {
     );
 
     listen('ds:tabManager-tab-active', (editorId: string, path: string) => {
-      if (editorId !== this.editorId || path !== this.path) return;
+      if (editorId !== this.editorId || path !== this.path) {
+        return;
+      }
 
       this.setActive();
     });

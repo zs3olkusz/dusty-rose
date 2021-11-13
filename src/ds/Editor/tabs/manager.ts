@@ -32,15 +32,19 @@ export class TabsManager {
     });
 
     listen('ds:tab-add', (editorId: string, path: string) => {
-      if (editorId === this.editorId) {
-        this.newTab(path);
+      if (editorId !== this.editorId) {
+        return;
       }
+
+      this.newTab(path);
     });
 
     listen('ds:tabManager-tab-close', (editorId: string, path: string) => {
-      if (editorId === this.editorId) {
-        this.closeTab(editorId, path);
+      if (editorId !== this.editorId) {
+        return;
       }
+
+      this.closeTab(editorId, path);
     });
   }
 
