@@ -2,9 +2,9 @@ import { Tab } from './tab';
 import {
   addTab,
   addTabManager,
-  emit,
   listen,
   removeTabFromEditor,
+  setActiveTab,
   setOpenedTab,
 } from '../core/state';
 
@@ -73,13 +73,15 @@ export class TabsManager {
       if (this.openedTab.path === path) {
         this.openedTab = null;
 
-        // set last tab as opened
-        const lastTab = Object.values(this.tabs).pop();
+        // set first tab as opened
+        const firstTab = Object.keys(this.tabs)[0];
 
-        if (lastTab) {
-          this.openedTab = lastTab;
+        if (firstTab) {
+          this.openedTab = this.tabs[firstTab];
 
-          emit('ds:tabManager-tab-active', editorId, this.openedTab.path);
+          setActiveTab(this.editorId, this.openedTab.path);
+        } else {
+          this.newTab();
         }
       }
     }
