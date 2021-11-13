@@ -137,11 +137,11 @@ ipcMain.on('ds:explore', (event, path: string) => {
         let nb = b.name.toLowerCase();
 
         if (na < nb) {
-          return 1;
+          return -1;
         }
 
         if (na > nb) {
-          return -1;
+          return 1;
         }
 
         return 0;
