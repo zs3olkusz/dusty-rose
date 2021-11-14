@@ -1,176 +1,28 @@
+import { Dusty } from '../../../types';
 import { convertWindowsPathToUnixPath, getBaseName } from '../../utils/files';
-import { Dialog } from '../core/dialog';
-
-interface IContextMenuAction {
-  name: string;
-  handler: (e: MouseEvent) => void;
-}
-
-/** Gets context menu actions for a given element based on its type (file or folder) */
-function getContextMenuOptions({
-  isFile,
-  isDirectory,
-  path,
-}: {
-  isFile: boolean;
-  isDirectory: boolean;
-  path: string;
-}): IContextMenuAction[] {
-  if (!isFile && isDirectory) {
-    return [
-      {
-        name: 'Create folder',
-        handler: () => {
-          new Dialog({
-            label: "Folder's name:",
-            callback: (folderName: string) => {
-              if (folderName) {
-                window.ds.mkdir(`${path}/${folderName}`);
-              }
-            },
-            placeholder: 'example',
-            inputAttrs: {
-              type: 'text',
-              required: 'true',
-            },
-            type: 'input',
-          });
-        },
-      },
-      {
-        name: 'Create file',
-        handler: () => {
-          new Dialog({
-            label: "File's name:",
-            callback: (fileName: string) => {
-              if (fileName) {
-                // create file via write to file, but we use pass empty string
-                window.ds.write(`${path}/${fileName}`, '');
-              }
-            },
-            placeholder: 'example',
-            inputAttrs: {
-              type: 'text',
-              required: 'true',
-            },
-            type: 'input',
-          });
-        },
-      },
-      {
-        name: 'Rename',
-        handler: (e: MouseEvent) => {
-          new Dialog({
-            label: "Folder's new name:",
-            callback: (newName: string) => {
-              if (newName) {
-                const basePath = path.split(getBaseName(path))[0];
-                const newPath = `${basePath}/${newName}`;
-
-                window.ds.rename(path, newPath);
-
-                (e.target as HTMLElement).dataset.path = newPath;
-              }
-            },
-            placeholder: 'example',
-            inputAttrs: {
-              type: 'text',
-              required: 'true',
-            },
-            type: 'input',
-          });
-        },
-      },
-      {
-        name: 'Delete',
-        handler: () => {
-          window.ds.delete(path, false);
-        },
-      },
-    ];
-  }
-  return [
-    {
-      name: 'Rename',
-      handler: (e: MouseEvent) => {
-        new Dialog({
-          label: "File's new name:",
-          callback: (newName: string) => {
-            if (newName) {
-              const basePath = path.split(getBaseName(path))[0];
-              const newPath = `${basePath}/${newName}`;
-
-              window.ds.rename(path, newPath);
-
-              (e.target as HTMLElement).dataset.path = newPath;
-            }
-          },
-          placeholder: 'example',
-          inputAttrs: {
-            type: 'text',
-            required: 'true',
-          },
-          type: 'input',
-        });
-      },
-    },
-    {
-      name: 'Delete',
-      handler: () => {
-        window.ds.delete(path, true);
-      },
-    },
-  ];
-}
-
-/** Item class for file explorer items */
-class Item {
-  path: string;
-  isDirectory: boolean;
-  isFile: boolean;
-  isExpanded: boolean;
-  childrens: {
-    [path: string]: Item;
-  };
-
-  constructor(
-    path: string,
-    isFile = true,
-    isDirectory = false,
-    isExpanded = false,
-    readonly isRoot = false
-  ) {
-    this.path = path;
-    this.isDirectory = isDirectory;
-    this.isFile = isFile;
-    this.isExpanded = isExpanded;
-
-    this.childrens = {};
-
-    this.isRoot && this._explore(this.path);
-  }
-
-  /** Explore the directory and create childrens */
-  private _explore(path: string): void {
-    if (!this.isFile && this.isDirectory) {
-      const result = window.ds.explore(path);
-
-      result.map(({ name, isDirectory, isFile }) => {
-        this.childrens[name] = new Item(`${path}/${name}`, isFile, isDirectory);
-      });
-    }
-  }
-}
+import { emit, openFolder } from '../core/state';
+import { getContextMenuOptions } from './contextMenu';
+import { Item } from './item';
 
 export class FileExplorer {
   tree: Item;
 
   constructor(path: string) {
+    path = convertWindowsPathToUnixPath(path);
+
     if (!window.ds.explore(path)) return;
 
-    this.tree = new Item(path, false, true, true, true);
+    // create new tree for file explorer in state
+    window.state.workspace[path] = {
+      tree: {},
+    };
+
+    this.tree = new Item(path, false, true, path, true, true);
 
     this._init();
+
+    // update state
+    openFolder(this.tree.path);
   }
 
   /** Initialize explorer */
@@ -206,7 +58,7 @@ export class FileExplorer {
 
   /** Create a context menu for file explorer in DOM */
   private _renderContextMenu(
-    actions: IContextMenuAction[],
+    actions: Dusty.ContextMenuAction[],
     context: HTMLElement
   ): void {
     context.innerHTML = '';
@@ -274,7 +126,8 @@ export class FileExplorer {
       item.childrens[name] = new Item(
         `${item.path}/${name}`,
         isFile,
-        isDirectory
+        isDirectory,
+        this.tree.path
       );
     });
 
@@ -360,6 +213,26 @@ export class FileExplorer {
       el.appendChild(ul);
     } else {
       el.textContent = name;
+
+      // on double click, open file in new tab
+      el.addEventListener('dblclick', () => {
+        if (
+          window.state.tabManagers[window.state.editors.activeEditor]
+            .openedTab === item.path
+        ) {
+          emit(
+            'ds:tabManager-tab-active',
+            window.state.editors.activeEditor,
+            item.path
+          );
+        } else {
+          emit(
+            'ds:tabManager-add',
+            window.state.editors.activeEditor,
+            item.path
+          );
+        }
+      });
     }
 
     // add drag support for files and folders

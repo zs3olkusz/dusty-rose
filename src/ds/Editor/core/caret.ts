@@ -1,11 +1,7 @@
 export class Caret {
-  private readonly _editor: HTMLElement;
-
   tab: string = '    ';
 
-  constructor(editor: HTMLElement) {
-    this._editor = editor;
-
+  constructor(private readonly _editor: HTMLElement) {
     this._editor.addEventListener('keydown', (e: KeyboardEvent) => {
       if (e.key === 'Tab') {
         const pos = this.getCaretPos() + this.tab.length;
@@ -65,5 +61,37 @@ export class Caret {
     });
 
     return pos;
+  }
+
+  /** Get caret position */
+  public getCaretPosInfo(): { line: number; column: number } {
+    const node = window.getSelection().anchorNode;
+
+    const lines = this._editor.childNodes;
+
+    let line = 0;
+    const column = window.getSelection().anchorOffset + 1;
+
+    for (let i = 0; i < lines.length; i++) {
+      const element = lines[i];
+
+      if (element.nodeName === 'DIV' || element.nodeName === 'BR') {
+        line++;
+      }
+
+      // turning off typescript check because of `childNodes` type
+      // @ts-ignore
+      if (element === node || [...element.childNodes].indexOf(node) !== -1) {
+        return {
+          line,
+          column,
+        };
+      }
+    }
+
+    return {
+      line,
+      column,
+    };
   }
 }

@@ -1,8 +1,9 @@
 import { TabsManager } from './tabs/manager';
-import { getLineEndings, LineEnding } from '../utils/files';
+import { getLineEndings, genId, LineEnding } from '../utils';
 import { textToHtml, htmlToText } from './core/text';
 import { WorkSpace } from './workspace';
 import { Tab } from './tabs/tab';
+import { addEditor, listen, setActiveEditor, updateTab } from './core/state';
 
 /**
  * Ignored keys for the editor's highlight
@@ -46,12 +47,21 @@ const ignoredKeys = [
 const cursorPosEl = document.getElementById('cursorPos');
 
 export class Editor {
+  readonly id: string;
   tabsManager: TabsManager;
   workspace: WorkSpace;
 
   constructor(public readonly el: HTMLElement) {
+    this.id = genId();
+
+    // add editor to the list of editors and set it as active
+    setActiveEditor(this.id);
+    addEditor(this.id, {
+      element: this.el,
+    });
+
     // create tabs manager for the editor
-    this.tabsManager = new TabsManager(this);
+    this.tabsManager = new TabsManager(this.id);
 
     // create workspace for the editor
     this.workspace = new WorkSpace();
@@ -62,27 +72,27 @@ export class Editor {
         this.el.innerHTML = '<div><br></div>';
       }
 
+      // get opened tab
+      const openedTab = this.tabsManager.openedTab;
+
       // check if key is ignored
       if (ignoredKeys.indexOf(e.key) === -1) {
         // get caret position
-        const pos = this.tabsManager.openedTab.caret.getCaretPos();
+        const pos = openedTab.caret.getCaretPos();
 
         // update code highlighting if tab is opened and code highlighting is enabled
-        if (
-          this.tabsManager.openedTab &&
-          this.tabsManager.openedTab.highlight
-        ) {
-          this.tabsManager.openedTab.highlight.highlight();
+        if (openedTab && openedTab.highlight) {
+          openedTab.highlight.highlight();
         }
         // update caret position
-        this.tabsManager.openedTab.caret.setCaretPos(pos);
+        openedTab.caret.setCaretPos(pos);
       }
 
       // update caret position info
       this._updateCaretPos();
 
       // update tab content
-      this._updateTabContent(this.tabsManager.openedTab);
+      this._updateTabContent(openedTab);
     });
 
     this.el.addEventListener('keydown', (e: KeyboardEvent) => {
@@ -119,11 +129,10 @@ export class Editor {
       const files = e.dataTransfer.files;
       for (let index = 0; index < files.length; index++) {
         const element = files[index];
-        const fileContent = window.ds.read(element.path);
+        const exists = window.ds.read(element.path) !== null;
 
         // open file and create new tab if it's exist
-        if (fileContent !== null) {
-          this.setContent(fileContent);
+        if (exists) {
           this.tabsManager.newTab(element.path);
         }
       }
@@ -199,51 +208,49 @@ export class Editor {
         }
       });
     });
+
+    listen('ds:tabManager-add', (editorId: string, path: string) => {
+      if (editorId !== this.id) {
+        return;
+      }
+
+      this.tabsManager.newTab(path);
+    });
+
+    listen('ds:tabManager-tab-active', (editorId: string, path: string) => {
+      if (editorId !== this.id) {
+        return;
+      }
+
+      this.setContent(window.state.tabs[path].fileContent);
+    });
   }
 
   /** Update caret position info */
   private _updateCaretPos(): void {
-    const { line, column } = this._getCaretPos();
+    const { line, column } = this.tabsManager.openedTab.caret.getCaretPosInfo();
 
     cursorPosEl.innerHTML = `Ln ${line}, Col ${column}`;
-  }
 
-  /** Get caret position */
-  private _getCaretPos(): { line: number; column: number } {
-    const node = window.getSelection().anchorNode;
-
-    const lines = this.el.childNodes;
-
-    let line = 0;
-    const column = window.getSelection().anchorOffset + 1;
-
-    for (let i = 0; i < lines.length; i++) {
-      const element = lines[i];
-
-      if (element.nodeName === 'DIV' || element.nodeName === 'BR') {
-        line++;
-      }
-
-      // turning off typescript check because of `childNodes` type
-      // @ts-ignore
-      if (element === node || [...element.childNodes].indexOf(node) !== -1) {
-        return {
-          line,
-          column,
-        };
-      }
-    }
-
-    return {
-      line,
-      column,
-    };
+    // update tab state with new cursor position
+    updateTab(window.state.tabManagers[this.id].openedTab, {
+      caret: {
+        line,
+        column,
+      },
+    });
   }
 
   /** Save file */
   public saveFile(tab?: Tab): void {
     if (tab) {
       window.ds.write(tab.path, tab.fileContent);
+
+      // update tab state with new status
+      updateTab(tab.path, {
+        isSaved: true,
+        isChanged: false,
+      });
     } else {
       const path = window.ds.write(
         this.tabsManager.openedTab.path,
@@ -255,6 +262,12 @@ export class Editor {
       if (path && !this.tabsManager.openedTab.path) {
         this.tabsManager.openedTab.setPath(path);
       }
+
+      // update tab state with new status
+      updateTab(window.state.tabManagers[this.id].openedTab, {
+        isSaved: true,
+        isChanged: false,
+      });
     }
   }
 
@@ -263,6 +276,11 @@ export class Editor {
     tab.fileContent = htmlToText(this.el).join(
       getLineEndings() === LineEnding.CRLF ? '\r\n' : '\n'
     );
+
+    // update tab state with new content
+    updateTab(window.state.tabManagers[this.id].openedTab, {
+      fileContent: tab.fileContent,
+    });
   }
 
   /** Set content of the editor */

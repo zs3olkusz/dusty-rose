@@ -1,6 +1,4 @@
 export class DSMenu {
-  newFile() {}
-
   initMenu(): Array<Electron.MenuItemConstructorOptions | Electron.MenuItem> {
     return [this.fileMenu(), this.editMenu(), this.selectionMenu()];
   }

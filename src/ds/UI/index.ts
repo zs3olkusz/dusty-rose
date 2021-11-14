@@ -1,3 +1,4 @@
+import { initState } from '../Editor/core/state';
 import { Editor } from '../Editor/editor';
 import { loadTheme } from '../Editor/theme';
 import { resizable } from './resizable';
@@ -8,10 +9,11 @@ export function renderer(): void {
   // load the theme
   loadTheme();
 
-  // create the editor
-  const editorEl = document.getElementById('editor');
+  // initialize the state
+  initState();
 
-  const editor = new Editor(editorEl);
+  // create the editor
+  new Editor(document.getElementById('editor'));
 
   // add the resizable option for the aside
   resizable();
