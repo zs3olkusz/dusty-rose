@@ -217,8 +217,8 @@ export class Editor {
       this.tabsManager.newTab(path);
     });
 
-    listen('ds:tabManager-tab-active', (editor: string, path: string) => {
-      if (editor !== this.id) {
+    listen('ds:tabManager-tab-active', (editorId: string, path: string) => {
+      if (editorId !== this.id) {
         return;
       }
 

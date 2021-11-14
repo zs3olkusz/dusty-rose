@@ -23,8 +23,8 @@ export class TabsManager {
       tabs: [],
     });
 
-    listen('ds:tabManager-tab-active', (editor: string, path: string) => {
-      if (editor !== this.editorId) {
+    listen('ds:tabManager-tab-active', (editorId: string, path: string) => {
+      if (editorId !== this.editorId) {
         return;
       }
 
@@ -50,6 +50,12 @@ export class TabsManager {
 
   /** Create new tab and set it as opened */
   public newTab(path: string = ''): void {
+    // check if tab already exists
+    if (this.tabs[path]) {
+      this.tabs[path].openTab();
+      return;
+    }
+
     this.openedTab = new Tab(this.editorId, path);
     this.tabs[this.openedTab.path] = this.openedTab;
 
