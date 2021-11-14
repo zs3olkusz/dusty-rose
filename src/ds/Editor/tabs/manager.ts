@@ -64,6 +64,8 @@ export class TabsManager {
       caret: { line: 1, column: 1 },
     });
     setOpenedTab(this.editorId, this.openedTab.path);
+
+    window.state.editors[this.editorId].element.contentEditable = 'true';
   }
 
   /** Close tab */
@@ -80,12 +82,18 @@ export class TabsManager {
         // set first tab as opened
         const firstTab = Object.keys(this.tabs)[0];
 
+        // element of the editor
+        const element = window.state.editors[this.editorId].element;
+
         if (firstTab) {
           this.openedTab = this.tabs[firstTab];
 
           setActiveTab(this.editorId, this.openedTab.path);
+
+          element.contentEditable = 'true';
         } else {
-          this.newTab();
+          element.innerHTML = '';
+          element.contentEditable = 'false';
         }
       }
     }
