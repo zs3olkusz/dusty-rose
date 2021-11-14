@@ -1,5 +1,5 @@
 import { convertWindowsPathToUnixPath, getBasePath } from '../../utils';
-import { addFile, openFolder } from '../core/state';
+import { addChild, openFolder } from '../core/state';
 
 /** Item class for file explorer items */
 export class Item {
@@ -21,21 +21,21 @@ export class Item {
     this.childrens = {};
 
     if (this.isRoot) {
-      this._explore(this.path);
-    }
+      openFolder(this.path, this.path);
 
-    if (this.isDirectory) {
-      openFolder(this.path, !isRoot ? this.path : undefined);
+      this._explore(this.path);
     } else {
-      addFile(this.path, {
+      const parentPath = getBasePath(this.path);
+
+      addChild({
         path: this.path,
-        isFile: true,
-        isDirectory: false,
+        isFile: this.isFile,
+        isDirectory: this.isDirectory,
         basePath: this.basePath,
-        isExpanded: false,
-        isRoot: false,
-        parent: getBasePath(this.path),
-        children: [],
+        isExpanded: this.isExpanded,
+        isRoot: this.isRoot,
+        parent: parentPath,
+        childs: [],
       });
     }
   }

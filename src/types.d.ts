@@ -44,7 +44,7 @@ export declare namespace Dusty {
     isExpanded: boolean;
     isRoot: boolean;
     parent: string;
-    children: string[];
+    childs: string[];
   }
 
   interface FileExplorerState {
